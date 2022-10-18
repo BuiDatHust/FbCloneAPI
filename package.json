@@ -2,22 +2,28 @@
   "name": "FbCloneAPI",
   "version": "1.0.0",
   "description": "Simple API for FBClone ",
-  "main": "src/server.js",
+  "main": "src/bin/www",
   "repository": "https://github.com/BuiDatHust/FbCloneAPI.git",
   "author": "buidat <dinhtuan95qh@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "server-debug": "nodemon --inspect src/server.js",
+    "serve-debug": "nodemon --inspect src/bin/www",
     "test": "jest --forceExit --coverage --verbose",
-    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
-    "watch-debug": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve-debug\""
+    "watch": "concurrently -k -p \"[{name}]\" -n \"Javascript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-node\"",
+    "watch-debug": "concurrently -k -p \"[{name}]\" -n \"Javascript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run serve-debug\"",
+    "watch-node": "nodemon src/bin/www"
   },
   "dependencies": {
+    "compression": "^1.7.4",
     "concurrently": "^7.4.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "joi": "^17.6.3",
+    "log4js": "^6.7.0",
     "mongoose": "^6.6.5",
+    "morgan": "^1.10.0",
     "nodemon": "^2.0.20",
     "swagger-jsdoc": "^6.2.5",
     "swagger-ui-express": "^4.5.0"
