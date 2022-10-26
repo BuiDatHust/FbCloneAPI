@@ -1,4 +1,4 @@
-const { getLogger, configure } = require('log4js');
+const { getLogger, configure } = require('log4js')
 
 const config = {
   appenders: {
@@ -30,10 +30,10 @@ const config = {
     parameterLogging: { appenders: ['parameterLogging'], level: 'info' },
     errorLogging: { appenders: ['errorLogging'], level: 'error' },
   },
-};
+}
 
-configure(config);
+configure(config)
 
-const getConsoleLogger = (category) => getLogger(category);
+const getConsoleLogger = (category) => getLogger(category)
 
-module.exports =  getConsoleLogger;
+module.exports = getConsoleLogger

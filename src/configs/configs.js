@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config()
 
 module.exports = {
   esmsConfig: {
@@ -22,4 +22,4 @@ module.exports = {
     port: parseInt(process.env.REDIS_PORT) || 6379,
     password: process.env.REDIS_PASSWORD,
   },
-};
+}

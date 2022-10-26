@@ -1,5 +1,5 @@
-const swaggerJsDoc = require('swagger-jsdoc');
-require('dotenv').config();
+const swaggerJsDoc = require('swagger-jsdoc')
+require('dotenv').config()
 
 const swaggerDefinition = {
   info: {
@@ -25,11 +25,11 @@ const swaggerDefinition = {
     },
   },
   definitions: {},
-};
+}
 
 const options = {
   swaggerDefinition,
   explorer: true,
   apis: ['**/*.js'],
-};
-module.exports =  swaggerJsDoc(options);
+}
+module.exports = swaggerJsDoc(options)
