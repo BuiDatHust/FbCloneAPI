@@ -13,6 +13,11 @@ const BadAuthentication = {
   message: 'Bad authentication data',
 }
 
+const OtpNotCorrect = {
+  code: 216,
+  message: 'Otp not correct',
+}
+
 const RegiteredPhone = {
   code: 400,
   message: 'Phone Registered!',
@@ -28,11 +33,18 @@ const PasswordNotCorrect = {
   message: 'Password Not Correct',
 }
 
+const DeviceIdIsMissing = {
+  code: 400,
+  message: 'DeviceId Is Missing',
+}
+
 module.exports = {
   NoData,
   InternalError,
   BadAuthentication,
   RegiteredPhone,
   PasswordNotMatch,
-  PasswordNotCorrect
+  PasswordNotCorrect,
+  DeviceIdIsMissing,
+  OtpNotCorrect
 }

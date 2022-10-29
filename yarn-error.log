@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/bin/node /home/buidat/.yarn/bin/yarn.js add bcriptjs
+  /usr/local/bin/node /home/buidat/.yarn/bin/yarn.js add twillo
 
 PATH: 
   /home/buidat/.yarn/bin:/home/buidat/.config/yarn/global/node_modules/.bin:/home/buidat/.yarn/bin:/home/buidat/.config/yarn/global/node_modules/.bin:/home/buidat/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/bin:/usr/local/go/bin
@@ -14,7 +14,7 @@ Platform:
   linux x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/bcriptjs: Not found
+  Error: https://registry.yarnpkg.com/twillo: Not found
       at params.callback [as _callback] (/home/buidat/.yarn/lib/cli.js:66145:18)
       at self.callback (/home/buidat/.yarn/lib/cli.js:140890:22)
       at Request.emit (node:events:527:28)
@@ -47,6 +47,7 @@ npm manifest:
       "lint:fix": "eslint --fix ."
     },
     "dependencies": {
+      "bcryptjs": "^2.4.3",
       "compression": "^1.7.4",
       "concurrently": "^7.4.0",
       "cors": "^2.8.5",
@@ -336,6 +337,11 @@ Lockfile:
     integrity sha512-NF+epuEdnUYVlGuhaxbbq+dvJttwLnGY+YixlXlME5KpQ5W3CnXA5cVTneY3SPbPDRkcjMbifrwmFYcClgOZeg==
     dependencies:
       safe-buffer "5.1.2"
+  
+  bcryptjs@^2.4.3:
+    version "2.4.3"
+    resolved "https://registry.yarnpkg.com/bcryptjs/-/bcryptjs-2.4.3.tgz#9ab5627b93e60621ff7cdac5da9733027df1d0cb"
+    integrity sha512-V/Hy/X9Vt7f3BbPJEi8BdVFMByHi+jNXrYkW3huaybV/kQ0KJg0Y6PkEMbn+zeT+i+SiKZ/HMqJGIIt4LZDqNQ==
   
   binary-extensions@^2.0.0:
     version "2.2.0"

@@ -12,6 +12,12 @@ module.exports = {
     'bUfxkJXG5xOtaOqRyTmXqWGl4ZxNSyAPbJGVfc7DKix2lyBMJn6TtmKQER52q2eC',
   preSignExpiration: 60 * 60 * 2,
   hashSalt: 10,
+  otpTtl: 5 * 60,
+  regex: {
+    email: /^(([A-Za-z0-9]{1,}(\.)?)*[A-Za-z0-9]{1,})@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z0-9]+\.)+[a-zA-Z]{2,}))$/,
+    phone: /^(84|0)[1-9][0-9]{8,9}$/,
+    countryCode: /^\+(\d{1}\-)?(\d{1,3})$/,
+  },
   prefix: {
     imageMime: 'image',
     videoMime: 'video',

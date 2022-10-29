@@ -32,7 +32,7 @@ app.options('*', cors())
 app.use(morganLogger())
 
 // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use('/api', routes)
+app.use('/api/v1', routes)
 
 app.use((req, res) => {
   res.status(404).send({ url: `${req.path} not found` })
