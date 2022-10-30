@@ -10,15 +10,19 @@ const postsSchema = new Schema(
       required: true,
     },
     images: {
-      type: [{
-        type: String
-      }],
+      type: [
+        {
+          type: String,
+        },
+      ],
       required: false,
     },
     videos: {
-      type: [{
-        type: String,
-      }],
+      type: [
+        {
+          type: String,
+        },
+      ],
       required: false,
     },
     describe: {
@@ -48,17 +52,20 @@ const postsSchema = new Schema(
   }
 )
 
-postsSchema.pre('save', function(next) {
-    const post = this;
-    if( post.images.length && post.videos.length) {
-        throw new Error('Chi co 1 trong 2: anh hoac video!');
-    }
-    next();
+postsSchema.pre('save', function (next) {
+  if (this.images.length && this.videos.length) {
+    throw new Error('Chi co 1 trong 2: anh hoac video!')
+  }
+  next()
 })
-postsSchema.post('deleteOne',{document:true, query: false}, async function(next){
-    await CommentServices.delete({postId: this._id})
-    next();
-})
+postsSchema.post(
+  'deleteOne',
+  { document: true, query: false },
+  async function (next) {
+    await CommentServices.delete({ postId: this._id })
+    next()
+  }
+)
 
 const PostModel = mongoose.model('Posts', postsSchema)
 
