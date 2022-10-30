@@ -1,3 +1,3 @@
 # FbCloneAPI
 
-A simple backend for FB clone project!
+A simple backend for FaceBook clone project!
