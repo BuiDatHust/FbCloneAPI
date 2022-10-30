@@ -7,7 +7,7 @@
   "author": "buidat <dinhtuan95qh@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "serve-debug": "nodemon --inspect src/bin/www",
+    "serve": "nodemon src/bin/www",
     "test": "jest --forceExit --coverage --verbose",
     "watch": "concurrently -k -p \"[{name}]\" -n \"Javascript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-node\"",
     "watch-debug": "concurrently -k -p \"[{name}]\" -n \"Javascript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run serve-debug\"",
