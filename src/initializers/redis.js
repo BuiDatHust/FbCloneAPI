@@ -3,7 +3,7 @@ const configs = require('../configs/configs')
 const redisClient = redis.createClient({ url: configs.redis.url })
 
 const connectRedis = () => {
-  ;(async () => {
+  (async () => {
     await redisClient.connect()
   })()
 

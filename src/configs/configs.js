@@ -28,4 +28,15 @@ module.exports = {
     authToken: process.env.TWILIO_AUTH_TOKEN,
     senderPhone: process.env.TWILIO_PHONE_NUMBER,
   },
+  s3: {
+    credentials: {
+      accessKeyId: process.env.S3_ACCESS_KEY,
+      secretAccessKey: process.env.S3_SECRET_KEY,
+    },
+    endpoint: process.env.S3_ENDPOINT,
+    params: {
+      ACL: 'public-read',
+      Bucket: process.env.S3_BUCKET_NAME,
+    },
+  },
 }

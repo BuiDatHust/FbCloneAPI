@@ -1,8 +1,9 @@
 const permitParameter = (body, parameter) => {
-  Object.keys(body).forEach((keyParam) => {
+  const permitedParam = JSON.parse(JSON.stringify(body));
+  Object.keys(permitedParam).forEach((keyParam) => {
     if(!parameter.includes(keyParam)) delete body[keyParam]
   })
-  return body
+  return permitedParam
 }
 
 module.exports = permitParameter
