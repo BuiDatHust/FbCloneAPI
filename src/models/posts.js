@@ -34,6 +34,14 @@ const postsSchema = new Schema(
       enum: STATUS_ENUM,
       required: false,
     },
+    totalComment: {
+      type: Number,
+      default: 0,
+    },
+    totalReaction: {
+      type: Number,
+      default: 0,
+    },
     url: {
       type: String,
       required: false,

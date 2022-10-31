@@ -1,3 +1,4 @@
+const { COMMENT_TYPE, POST_TYPE } = require('../const/postConstant')
 const CommentModel = require('../models/comments')
 
 exports.findOne = async (filter) => {
@@ -9,14 +10,14 @@ exports.findChildComment = async (commentId) => {
   const comments = await CommentModel.find({
       $and: [
         { commentId },
-        { _id: { $ne: commentId} }
+        { type: COMMENT_TYPE }
       ]
   })
   return comments
 }
 
 exports.findByPostId = async (postId) => {
-  const comments = await CommentModel.findAll({ postId })
+  const comments = await CommentModel.findAll({ postId, type: POST_TYPE })
   return comments
 }
 

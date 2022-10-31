@@ -1,4 +1,5 @@
 const { Schema, default: mongoose } = require('mongoose')
+const { POST_TYPE, COMMENT_TYPE } = require('../const/postConstant')
 
 const commentsSchema = new Schema(
   {
@@ -17,6 +18,11 @@ const commentsSchema = new Schema(
       ref: 'Comments',
       required: false,
     },
+    type: {
+      type: String,
+      enum: [POST_TYPE, COMMENT_TYPE],
+      default: POST_TYPE,
+    },
     describe: {
       type: String,
       required: true,
@@ -24,6 +30,14 @@ const commentsSchema = new Schema(
     images: {
       type: Array,
       required: false,
+    },
+    totalComment: {
+      type: Number,
+      default: 0,
+    },
+    totalReaction: {
+      type: Number,
+      default: 0,
     },
     videos: {
       type: Array,

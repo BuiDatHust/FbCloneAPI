@@ -14,16 +14,14 @@ const { CREATEBLE_PARAMETER } = require('../const/userConstant')
 
 exports.signUp = async (req, res) => {
   try {
-    const { phone, password, passwordConfirmation, deviceId } = req.body
+    const { phone, password, passwordConfirmation } = req.body
     const params = permitParameter(req.body, CREATEBLE_PARAMETER)
-    if (!deviceId) return sendError(res, 404, DeviceIdIsMissing)
     const existedUser = await UserServices.findOne({ phone })
     if (existedUser) return sendError(res, 400, RegiteredPhone)
     if (password !== passwordConfirmation)
       return sendError(res, 400, PasswordNotMatch)
-    const user = await UserServices.createOne(params)
-    const accessToken = await UserModel.generateAccessToken(user._id, deviceId)
-    sendSuccess(res, { accessToken, tokenExpireAfter: settings.jwt.ttl })
+    await UserServices.createOne(params)
+    sendSuccess(res, {})
   } catch (error) {
     sendError(res, 500, error.message, error)
   }

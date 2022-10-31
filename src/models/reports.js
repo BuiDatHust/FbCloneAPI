@@ -1,5 +1,5 @@
 const { Schema, default: mongoose } = require('mongoose')
-const { REPORT_POST_TYPE, REPORT_USER_TYPE, PENDING, APPROVED, REJECT } = require('../const/reportConstant')
+const { REPORT_POST_TYPE, REPORT_USER_TYPE, PENDING, APPROVED, REJECT, REPORT_COMMENT_TYPE } = require('../const/reportConstant')
 const CommunityRuleModel = require('./communityRules')
 
 const commentsSchema = new Schema(
@@ -16,7 +16,7 @@ const commentsSchema = new Schema(
     },
     type: {
       type: String,
-      enum: [REPORT_POST_TYPE, REPORT_USER_TYPE],
+      enum: [REPORT_POST_TYPE, REPORT_USER_TYPE, REPORT_COMMENT_TYPE],
       default: REPORT_USER_TYPE,
     },
     comunityRules: {

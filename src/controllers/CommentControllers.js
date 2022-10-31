@@ -7,6 +7,7 @@ const {
 const CommentServices = require('../services/CommentServices')
 const { NoData } = require('../libs/errors')
 const settings = require('../configs/settings')
+const { POST_TYPE, COMMENT_TYPE } = require('../const/postConstant')
 
 exports.create = async (req, res) => {
   try {
@@ -27,10 +28,11 @@ exports.show = async (req, res) => {
     switch(type) {
       case 'post':
         filter.postId = id;
-        filter.commentId = null;
+        filter.type = POST_TYPE;
         break;
       case 'comment':
         filter.commentId = id;
+        filter.type = COMMENT_TYPE;
         break;
       default:
         return sendError(res, 404, NoData);
