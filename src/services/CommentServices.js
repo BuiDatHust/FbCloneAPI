@@ -34,3 +34,13 @@ exports.update = async (_id, attribute) => {
   const comment = await CommentModel.findByIdAndUpdate({ _id }, attribute, {new:true})
   return comment
 }
+
+exports.findAllByPaginate = async (filter,perPage, numberPage, sortCondition) => {
+  const comments = await CommentModel.find(filter).byPaginate(numberPage, perPage,sortCondition)
+  return comments
+}
+
+exports.countDocument = async (filter) => {
+  const count = await CommentModel.countDocuments(filter)
+  return count
+}

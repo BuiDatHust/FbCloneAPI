@@ -4,9 +4,24 @@ const permitParameter = require('../libs/parameter')
 const { sendError, sendSuccess } = require('../libs/response')
 const PostModel = require('../models/posts')
 const PostServices = require('../services/PostServices')
+const settings = require('../configs/settings')
 
 exports.index = async (req, res) => {
   try {
+    const {userId} = req.params;
+    const {status, describe} = req.query;
+    const filter = { userId }
+    const perPage = req.query.perPage || settings.defaultPerPage;
+    const numberPage  = req.query.numberPage || 1;
+    const sortBy = req.query.sortBy || 'create_at';
+    const sortOrder = req.query.sortOrder || 'DESC';
+    const sortCondition = {}
+    sortCondition[sortBy] = sortOrder
+    if(status) filter.status = status;
+    if(describe) filter.describe = { $regex: `.*${describe}.*`}
+    const posts = await PostServices.findAllByPaginate(filter, perPage, numberPage, sortCondition)
+    let countTotal = await PostServices.countDocument(filter)
+    sendSuccess(res, {posts, pagination: {total: countTotal, page: numberPage, perPage}})
   } catch (error) {
     sendError(res, 500, error.message, error)
   }

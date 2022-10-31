@@ -44,10 +44,14 @@ const commentsSchema = new Schema(
 )
 
 commentsSchema.post('deleteOne',{document:true, query: false}, async function(doc, next){
-  console.log(111)
   await CommentModel.deleteMany({commentId: doc._id})
   next()
 })
+commentsSchema.query.byPaginate = function (pageNumber, nPerPage,sortCondition) {
+  return this.sort(sortCondition)
+    .skip(pageNumber > 0 ? (pageNumber - 1) * nPerPage : 0)
+    .limit(nPerPage)
+}
 
 const CommentModel = mongoose.model('Comments', commentsSchema)
 

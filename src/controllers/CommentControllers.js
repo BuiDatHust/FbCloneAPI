@@ -6,6 +6,7 @@ const {
 } = require('../const/commentConstant')
 const CommentServices = require('../services/CommentServices')
 const { NoData } = require('../libs/errors')
+const settings = require('../configs/settings')
 
 exports.create = async (req, res) => {
   try {
@@ -18,21 +19,32 @@ exports.create = async (req, res) => {
   }
 }
 
-exports.index = async (req, res) => {
-  try {
-  } catch (error) {
-    sendError(res, 500, error.message, error)
-  }
-}
-
 exports.show = async (req, res) => {
   try {
-    const { commentId } = req.params
-    let comment = await CommentServices.findOne({ _id: commentId })
-    if (!comment) return sendError(res, 404, NoData)
-    const child = await CommentServices.findChildComment(commentId)
-    comment._doc.childs = child;
-    sendSuccess(res, { comment })
+    const {id,type} = req.params;
+    const {describe} = req.query;
+    const filter = {}
+    switch(type) {
+      case 'post':
+        filter.postId = id;
+        filter.commentId = null;
+        break;
+      case 'comment':
+        filter.commentId = id;
+        break;
+      default:
+        return sendError(res, 404, NoData);
+    }
+    const perPage = req.query.perPage || settings.defaultPerPage;
+    const numberPage  = req.query.numberPage || 1;
+    const sortBy = req.query.sortBy || 'create_at';
+    const sortOrder = req.query.sortOrder || 'DESC';
+    const sortCondition = {}
+    sortCondition[sortBy] = sortOrder
+    if(describe) filter.describe = { $regex: `.*${describe}.*`}
+    const posts = await CommentServices.findAllByPaginate(filter, perPage, numberPage, sortCondition)
+    let countTotal = await CommentServices.countDocument(filter)
+    sendSuccess(res, {posts, pagination: {total: countTotal, page: numberPage, perPage}})
   } catch (error) {
     sendError(res, 500, error.message, error)
   }
