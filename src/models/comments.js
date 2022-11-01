@@ -1,5 +1,6 @@
 const { Schema, default: mongoose } = require('mongoose')
 const { POST_TYPE, COMMENT_TYPE } = require('../const/postConstant')
+const PostModel = require('./posts')
 
 const commentsSchema = new Schema(
   {
@@ -39,6 +40,14 @@ const commentsSchema = new Schema(
       type: Number,
       default: 0,
     },
+    isComment: {
+      type: Boolean,
+      default: true,
+    },
+    isReact: {
+      type: Boolean,
+      default: true,
+    },
     videos: {
       type: Array,
       required: false,
@@ -59,6 +68,11 @@ const commentsSchema = new Schema(
 
 commentsSchema.post('deleteOne',{document:true, query: false}, async function(doc, next){
   await CommentModel.deleteMany({commentId: doc._id})
+  await PostModel.findByIdAndUpdate({_id: this.postId}, { $inc: {totalComment: -1}  })
+  next()
+})
+commentsSchema.post('save',{document:true, query: false}, async function(doc, next){
+  await PostModel.findByIdAndUpdate({_id: this.postId}, { $inc: {totalComment: 1}  })
   next()
 })
 commentsSchema.query.byPaginate = function (pageNumber, nPerPage,sortCondition) {

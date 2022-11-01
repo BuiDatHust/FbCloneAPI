@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const { default: mongoose, Schema } = require('mongoose')
 const settings = require('../configs/settings')
 const { redisClient } = require('../initializers/redis')
 const bcrypt = require('bcryptjs')
@@ -18,30 +18,30 @@ const usersSchema = new mongoose.Schema(
       required: true,
       unique: true,
       validate: {
-        validator: function(v) {
-          return settings.regex.phone.test(v);
+        validator: function (v) {
+          return settings.regex.phone.test(v)
         },
-        message: props => `${props.value} khong phai so dien thoai hop le!`
+        message: (props) => `${props.value} khong phai so dien thoai hop le!`,
       },
     },
     countryCode: {
       type: String,
       required: true,
       validate: {
-        validator: function(v) {
-          return settings.regex.countryCode.test(v);
+        validator: function (v) {
+          return settings.regex.countryCode.test(v)
         },
-        message: props => `${props.value} khong phai ma code hop le!`
+        message: (props) => `${props.value} khong phai ma code hop le!`,
       },
     },
     email: {
       type: String,
       required: false,
       validate: {
-        validator: function(v) {
-          return settings.regex.email.test(v);
+        validator: function (v) {
+          return settings.regex.email.test(v)
         },
-        message: props => `${props.value} khong phai email hop le!`
+        message: (props) => `${props.value} khong phai email hop le!`,
       },
     },
     username: {
@@ -98,11 +98,21 @@ const usersSchema = new mongoose.Schema(
       required: false,
     },
     blocked_inbox: {
-      type: Array,
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: 'Users',
+        },
+      ],
       required: false,
     },
     blocked_diary: {
-      type: Array,
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: 'Users',
+        },
+      ],
       required: false,
     },
     createdAt: {
@@ -173,9 +183,7 @@ usersSchema.statics.deleteToken = async (deviceId, id) => {
   console.log(`${WHITELIST_ACCESS_TOKEN_PATTERN}${id}_${deviceId}`)
   let totalToken = currentUserTokens.length
   while (totalToken) {
-    await redisClient.lPop(
-      `${WHITELIST_ACCESS_TOKEN_PATTERN}${id}_${deviceId}`
-    )
+    await redisClient.lPop(`${WHITELIST_ACCESS_TOKEN_PATTERN}${id}_${deviceId}`)
     totalToken -= 1
   }
 }

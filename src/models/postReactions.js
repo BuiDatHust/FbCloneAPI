@@ -1,6 +1,6 @@
 const { Schema, default: mongoose } = require('mongoose')
 const { REACTION_ENUM } = require('../const/postConstant')
-const PostModel = require('./posts')
+const PostModel = require('./posts');
 
 const postReactionsSchema = new Schema(
   {
@@ -33,14 +33,15 @@ const postReactionsSchema = new Schema(
   }
 )
 
-postReactionsSchema.post('deleteOne',{ document: true, query: false }, async function(next){
-  await PostModel.findByIdAndUpdate({_id: this.postId}, { $inc: {totalReaction: -1}  })
+postReactionsSchema.post('deleteOne',{ document: true, query: false }, async function(doc,next){
+  await PostModel.findByIdAndUpdate({_id: doc.postId}, { $inc: {totalReaction: -1}  })
   next()
 })
-postReactionsSchema.post('save',{ document: true, query: false }, async function(next) {
-  await PostModel.findByIdAndUpdate({_id: this.postId}, { $inc: {totalReaction: 1}  })
+postReactionsSchema.post('save', async function (doc,next) {
+  await PostModel.findByIdAndUpdate({_id: doc.postId}, { $inc: {totalReaction: 1}  })
   next()
 })
+
 postReactionsSchema.query.byPaginate = function (pageNumber, nPerPage,sortCondition) {
   return this.sort(sortCondition)
     .skip(pageNumber > 0 ? (pageNumber - 1) * nPerPage : 0)

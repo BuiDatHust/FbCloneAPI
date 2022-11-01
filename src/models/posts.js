@@ -42,6 +42,14 @@ const postsSchema = new Schema(
       type: Number,
       default: 0,
     },
+    isComment: {
+      type: Boolean,
+      default: true,
+    },
+    isReact: {
+      type: Boolean,
+      default: true,
+    },
     url: {
       type: String,
       required: false,
@@ -69,8 +77,8 @@ postsSchema.pre('save', function (next) {
 postsSchema.post(
   'deleteOne',
   { document: true, query: false },
-  async function (next) {
-    await CommentServices.delete({ postId: this._id })
+  async function (doc, next) {
+    await CommentServices.delete({ postId: doc._id })
     next()
   }
 )
