@@ -22,10 +22,13 @@ exports.delete = async (_id) => {
   return
 }
 
-exports.findAllByPaginate = async (filter,perPage, numberPage, sortCondition) => {
-  const posts = await PostModel.find(filter).byPaginate(numberPage, perPage,sortCondition)
-  console.log(posts)
-  return posts
+exports.findAllByPaginate = async (
+  filter,
+  perPage,
+  numberPage,
+  sortCondition
+) => {
+  return PostModel.find(filter).byPaginate(numberPage, perPage, sortCondition)
 }
 
 exports.countDocument = async (filter) => {

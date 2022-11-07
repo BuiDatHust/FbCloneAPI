@@ -8,6 +8,7 @@ const CommentRouter = require('./Comments')
 const PostReactionRouter = require('./PostReactions')
 const CommentReactionRouter = require('./CommentReactions')
 const FriendRouter = require('./Friends')
+const FollowerRouter = require('./Followers')
 const passport = require('../../middlewares/passport');
 
 const router = Router();
@@ -21,5 +22,6 @@ router.use('/comment',  passport.authenticate('jwt', {session: false}), CommentR
 router.use('/post_reaction',  passport.authenticate('jwt', {session: false}), PostReactionRouter);
 router.use('/comment_reaction',  passport.authenticate('jwt', {session: false}), CommentReactionRouter);
 router.use('/friend',  passport.authenticate('jwt', {session: false}), FriendRouter)
+router.use('/follower', passport.authenticate('jwt', {session: false}), FollowerRouter)
 
 module.exports = router;
