@@ -38,6 +38,11 @@ const DeviceIdIsMissing = {
   message: 'DeviceId Is Missing',
 }
 
+const Unauthorized = {
+  code: 403,
+  message: 'Unauthorized',
+}
+
 module.exports = {
   NoData,
   InternalError,
@@ -46,5 +51,6 @@ module.exports = {
   PasswordNotMatch,
   PasswordNotCorrect,
   DeviceIdIsMissing,
-  OtpNotCorrect
+  OtpNotCorrect,
+  Unauthorized
 }

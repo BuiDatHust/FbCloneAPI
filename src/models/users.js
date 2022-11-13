@@ -115,6 +115,10 @@ const usersSchema = new mongoose.Schema(
       ],
       required: false,
     },
+    last_active_at: {
+      type: Date,
+      default: Date.now,
+    },
     createdAt: {
       type: Date,
       default: Date.now,

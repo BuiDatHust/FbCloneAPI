@@ -2,6 +2,7 @@ require('dotenv').config();
 
 module.exports = {
   defaultPerPage: '12',
+  defaultMessagePerPage: '25',
   jwt: {
     secret:
       process.env.JWT_SECRET ||

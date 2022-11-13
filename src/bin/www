@@ -3,6 +3,7 @@ const http = require('http')
 const mongoose = require('mongoose')
 const connectMongoDB = require('../initializers/mongodb')
 const { connectRedis } = require('../initializers/redis')
+const SocketIO = require('../initializers/socket')
 
 /**
  * Get port from environment and store in Express.
@@ -92,4 +93,5 @@ async function onListening() {
   console.log('Listening on ' + bind)
   await connectMongoDB()
   await connectRedis()
+  SocketIO.init(server)
 }

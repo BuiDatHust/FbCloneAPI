@@ -13,11 +13,12 @@ const jwtOptions = {
   ]),
   secretOrKey: settings.jwt.secret,
   passReqToCallback: true,
+  algorithms: ['HS256'],
 }
 
 const jwtStrategy = new Strategy(jwtOptions, async (req, payload, next) => {
   try {
-    const user = await UserServices.findOne({ id: payload.id })
+    const user = await UserServices.findOne({ _id: payload.id })
     if (!user) return next(null, null)
     const currentUserTokens = await redisClient.lRange(
       `${WHITELIST_ACCESS_TOKEN_PATTERN}${user._id}_${payload.deviceId}`,
