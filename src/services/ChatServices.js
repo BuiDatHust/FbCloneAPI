@@ -5,12 +5,13 @@ const createChat = async (attribute) => {
     attribute.firstUserId,
     attribute.secondUserId
   )
+  console.log(chatSetting)
   if (chatSetting) return updateChatSetting(chatSetting._id, chatSetting)
   return ChatSettingModel.create(attribute)
 }
 
 const findOneChatByUserId = async (message_from, message_to) => {
-  return ChatSettingModel.find({
+  return ChatSettingModel.findOne({
     $or: [
       {
         firstUserId: message_from,
@@ -24,8 +25,8 @@ const findOneChatByUserId = async (message_from, message_to) => {
   })
 }
 
-const updateChatSetting = async (id, attribute) => {
-  return ChatSettingModel.findByIdAndUpdate({ _id: id }, attribute, {
+const updateChatSetting = async (_id, attribute) => {
+  return ChatSettingModel.findByIdAndUpdate({ _id }, attribute, {
     new: true,
   })
 }

@@ -3,7 +3,7 @@ const { TYPE_MESSAGE } = require('../const/chatConstant')
 
 const messagesSchema = new Schema(
   {
-    chatId: {
+    chat_id: {
       type: Schema.Types.ObjectId,
       ref: 'ChatSettings',
       required: true,
@@ -31,7 +31,7 @@ const messagesSchema = new Schema(
       type: Object.values(TYPE_MESSAGE),
       default: TYPE_MESSAGE['text'],
     },
-    sent_at: {
+    seen_at: {
       type: Date,
       required: false,
     },

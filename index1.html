@@ -84,7 +84,7 @@
         e.preventDefault()
         if (input.value) {
           socket.emit('send_message', {
-            chatId: '',
+            chat_id: '63724c404caa6747839965df',
             content: input.value,
             type: 'text',
             userId: '63710bd1a186f2aea3db15eb',
@@ -98,11 +98,16 @@
       //   e.returnValue = '';
       //   socket.disconnect()635b9e7289647b45b7d75540
       // })
-      socket.on('send_message', function (msg) {
+
+      socket.on('seen_response', function (msg) {
+        console.log('seen message ', msg.messageId, ' at ', msg.seen_at)
+      })
+      socket.on('recieve_message', function (msg) {
         socket.emit('seen', {
           messageId: msg._id,
           seen_at: Date.now(),
-          message_from: '63710bd1a186f2aea3db15eb',
+          message_to: '63710bd1a186f2aea3db15eb',
+          message_from: '635b9e7289647b45b7d75540',
         })
         var item = document.createElement('li')
         item.textContent = msg.content

@@ -18,7 +18,7 @@ const findMessageById = async (_id) => {
 }
 
 const updateMessageById = async (_id, attribute) => {
-  return MessageModel.findOneAndReplace({_id}, attribute)
+  return MessageModel.findOneAndUpdate({_id}, attribute)
 }
 
 const countDocument = async (filter) => {

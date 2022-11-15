@@ -1,3 +1,4 @@
+const { promisifyEmmitter } = require('../helpers/promisifyEmitter')
 const getConsoleLogger = require('./consoleLoggers')
 
 const errorLogger = getConsoleLogger('errorLogging')
@@ -14,19 +15,19 @@ const sendError = (res, code, error, errorSubject) => {
   res.status(code).json({ error })
 }
 
-const socketResponse = (io, namespace, socketIds, eventName, data) => {
-  socketOutboundLogger.info(`Emit eventName ${eventName} to socket with ids: ${socketIds.join(',')}`)
-  socketIds.forEach(socketId => {
-    if (!namespace) {
-      io.to(socketId).emit(eventName, data);
-    } else {
-      io.of(namespace).to(socketId).emit(eventName, data);
-    }
-  })
+const socketResponse = async (io, namespace, socketIds, eventName, data) => {
+  socketOutboundLogger.info(
+    `Emit eventName ${eventName} to socket with ids: ${socketIds.join(',')}`
+  )
+  await Promise.all(
+    socketIds.map((socketId) =>
+      promisifyEmmitter(io, namespace, socketId, eventName, data)
+    )
+  )
 }
 
 module.exports = {
   sendError,
   sendSuccess,
-  socketResponse
+  socketResponse,
 }

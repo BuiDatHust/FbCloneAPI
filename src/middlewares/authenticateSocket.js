@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 const settings = require('../configs/settings')
-const { WHITELIST_ACCESS_TOKEN_PATTERN } = require('../const/userConstant')
+const { SOCKET_REDIS_PREIX } = require('../const/socketConstant')
 const { redisClient } = require('../initializers/redis')
 const { Unauthorized } = require('../libs/errors')
 const UserServices = require('../services/UserServices')
@@ -14,16 +14,11 @@ exports.authenticateSocket = async (socket, next) => {
     const user = await UserServices.findOne({ _id: payload.id })
     if (!user) return next(new Error(Unauthorized.message))
     const currentUserTokens = await redisClient.lRange(
-      `${WHITELIST_ACCESS_TOKEN_PATTERN}${user._id}_${payload.deviceId}`,
+      `${SOCKET_REDIS_PREIX}${payload.id}`,
       0,
       -1
     )
     console.log(currentUserTokens)
-    const validToken = currentUserTokens.find((currentToken) => {
-      const jsonToken = JSON.parse(currentToken)
-      return jsonToken.token === token
-    })
-    if (!validToken) return next(new Error(Unauthorized.message))
     socket.request.currentUser = user
     socket.request.deviceId = payload.deviceId
     next()

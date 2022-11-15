@@ -1,20 +1,38 @@
 const SOCKET_ERROR_EVENT = 'socket_error'
 
 const SEND_MESSAGE_EVENT = 'send_message'
+const RECIEVE_MESSAGE_EVENT = 'recieve_message'
+
 const DELETE_MESSAGE_EVENT = 'delete_message'
+const DELETE_MESSAGE_RESPONSE_EVENT = 'delete_message_response'
+
 const SEND_GROUP_MESSAGE_EVENT = 'send_group_message'
+const RECIEVE_GROUP_MESSAGE_EVENT = 'recieve_group_message'
 
 const SEEN_MESSAGE_EVENT = 'seen'
+const SEEN_MESSAGE_RESPONSE_EVENT = 'seen_response'
 
-const SOCKET_REDIS_PREIX = 'socket_redis_prefix_'
+const ONLINE_EVENT = 'online'
+const OFFLINE_EVENT = 'offline'
 
+const TYPING_EVENT = 'typing'
+const DISPLAY_TYPING_EVENT = 'display'
 
+const SOCKET_REDIS_PREIX = 'socket_ids_redis_prefix_'
 
 module.exports = {
+  SOCKET_REDIS_PREIX,
   SEND_MESSAGE_EVENT,
   DELETE_MESSAGE_EVENT,
   SEND_GROUP_MESSAGE_EVENT,
   SOCKET_ERROR_EVENT,
-  SOCKET_REDIS_PREIX,
-  SEEN_MESSAGE_EVENT
+  SEEN_MESSAGE_EVENT,
+  RECIEVE_MESSAGE_EVENT,
+  RECIEVE_GROUP_MESSAGE_EVENT,
+  DELETE_MESSAGE_RESPONSE_EVENT,
+  SEEN_MESSAGE_RESPONSE_EVENT,
+  ONLINE_EVENT,
+  OFFLINE_EVENT,
+  TYPING_EVENT,
+  DISPLAY_TYPING_EVENT
 }
