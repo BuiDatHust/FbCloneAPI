@@ -39,4 +39,9 @@ module.exports = {
       Bucket: process.env.S3_BUCKET_NAME,
     },
   },
+  rabbitmq: {
+    url: process.env.RABBITMQ_URL,
+    delayTime:process.env.RABBITMQ_DELAY_TIME,
+    numRetry: process.env.RABBITMQ_NUM_RETRY, 
+  }
 }

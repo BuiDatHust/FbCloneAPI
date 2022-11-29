@@ -24,3 +24,7 @@ exports.countDocument = async (filter) => {
 exports.unfollow = async (userId, follower) => {
   return FollowerModel.findOneAndDelete({ userId, follower })
 }
+
+exports.listFollowers = async (userId) => {
+  return FollowerModel.find({follower: userId})
+}

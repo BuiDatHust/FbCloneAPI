@@ -1,4 +1,7 @@
-const { UPDATEABLE_PARAMETER, CREATEABLE_PARAMETER } = require('../const/postConstant')
+const {
+  UPDATEABLE_PARAMETER,
+  CREATEABLE_PARAMETER,
+} = require('../const/postConstant')
 const { NoData } = require('../libs/errors')
 const permitParameter = require('../libs/parameter')
 const { sendError, sendSuccess } = require('../libs/response')
@@ -8,20 +11,28 @@ const settings = require('../configs/settings')
 
 exports.index = async (req, res) => {
   try {
-    const {userId} = req.params;
-    const {status, describe} = req.query;
+    const { userId } = req.params
+    const { status, describe } = req.query
     const filter = { userId }
-    const perPage = req.query.perPage || settings.defaultPerPage;
-    const numberPage  = req.query.numberPage || 1;
-    const sortBy = req.query.sortBy || 'create_at';
-    const sortOrder = req.query.sortOrder || 'DESC';
+    const perPage = req.query.perPage || settings.defaultPerPage
+    const numberPage = req.query.numberPage || 1
+    const sortBy = req.query.sortBy || 'create_at'
+    const sortOrder = req.query.sortOrder || 'DESC'
     const sortCondition = {}
     sortCondition[sortBy] = sortOrder
-    if(status) filter.status = status;
-    if(describe) filter.describe = { $regex: `.*${describe}.*`}
-    const posts = await PostServices.findAllByPaginate(filter, perPage, numberPage, sortCondition)
+    if (status) filter.status = status
+    if (describe) filter.describe = { $regex: `.*${describe}.*` }
+    const posts = await PostServices.findAllByPaginate(
+      filter,
+      perPage,
+      numberPage,
+      sortCondition
+    )
     let countTotal = await PostServices.countDocument(filter)
-    sendSuccess(res, {posts, pagination: {total: countTotal, page: numberPage, perPage}})
+    sendSuccess(res, {
+      posts,
+      pagination: { total: countTotal, page: numberPage, perPage },
+    })
   } catch (error) {
     sendError(res, 500, error.message, error)
   }
@@ -29,10 +40,10 @@ exports.index = async (req, res) => {
 
 exports.show = async (req, res) => {
   try {
-    const {postId} = req.params;
-    const post = await PostServices.findOne({postId});
-    if(!post) return sendError(res, 404, NoData)
-    sendSuccess(res, {post})
+    const { postId } = req.params
+    const post = await PostServices.findOne({ postId })
+    if (!post) return sendError(res, 404, NoData)
+    sendSuccess(res, { post })
   } catch (error) {
     sendError(res, 500, error.message, error)
   }
@@ -41,7 +52,7 @@ exports.show = async (req, res) => {
 exports.create = async (req, res) => {
   try {
     const params = permitParameter(req.body, CREATEABLE_PARAMETER)
-    const {baseUrl} = req.body;
+    const { baseUrl } = req.body
     params.userId = req.currentUser._id
     const post = await PostServices.create(params)
     const url = baseUrl + post._id
@@ -54,12 +65,15 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
-    const {postId} = req.params
+    const { postId } = req.params
     const params = permitParameter(req.body, UPDATEABLE_PARAMETER)
-    const post = await PostModel.findOne({postId, userId: req.currentUser._id})
-    if(!post) return sendError(res, 404, NoData)
-    updatedPost = await PostServices.update(postId, params) 
-    sendSuccess(res, {updatedPost})
+    const post = await PostModel.findOne({
+      postId,
+      userId: req.currentUser._id,
+    })
+    if (!post) return sendError(res, 404, NoData)
+    updatedPost = await PostServices.update(postId, params)
+    sendSuccess(res, { updatedPost })
   } catch (error) {
     sendError(res, 500, error.message, error)
   }
@@ -67,9 +81,12 @@ exports.update = async (req, res) => {
 
 exports.delete = async (req, res) => {
   try {
-    const {postId}= req.params;
-    const post = await PostServices.findOne({_id: postId, userId: req.currentUser._id})
-    if(!post) return sendError(res, 404, NoData)
+    const { postId } = req.params
+    const post = await PostServices.findOne({
+      _id: postId,
+      userId: req.currentUser._id,
+    })
+    if (!post) return sendError(res, 404, NoData)
     await PostServices.delete(post._id)
     sendSuccess(res, {})
   } catch (error) {

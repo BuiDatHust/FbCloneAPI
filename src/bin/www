@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const connectMongoDB = require('../initializers/mongodb')
 const { connectRedis } = require('../initializers/redis')
 const SocketIO = require('../initializers/socket')
+const rabbitmq = require('../initializers/rabbitmq')
 
 /**
  * Get port from environment and store in Express.
@@ -37,7 +38,7 @@ SIGNALS.forEach((signal) =>
         console.log('MongoDb connection closed.')
         process.exit(0)
       })
-      _io.disconnectSockets();
+      _io.disconnectSockets()
     })
   })
 )
@@ -94,7 +95,6 @@ async function onListening() {
   const addr = server.address()
   const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port
   console.log('Listening on ' + bind)
-  await connectMongoDB()
-  await connectRedis()
+  await Promise.all([connectMongoDB(), connectRedis(), rabbitmq.initialize()])
   global._io = SocketIO.init(server)
 }
