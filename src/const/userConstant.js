@@ -13,11 +13,14 @@ const CREATEBLE_PARAMETER = [
   'gender',
   'date_of_birth',
   'description',
-  'address',
+  'current_address',
+  'from_address',
   'city',
   'country',
   'avatar',
   'cover_image',
+  'worked_at',
+  'studied_at',
 ]
 const UPDATEBLE_PARAMETER = [
   'phone',
@@ -27,7 +30,8 @@ const UPDATEBLE_PARAMETER = [
   'gender',
   'date_of_birth',
   'description',
-  'address',
+  'current_address',
+  'from_address',
   'city',
   'country',
   'avatar',
@@ -42,5 +46,5 @@ module.exports = {
   WHITELIST_ACCESS_TOKEN_PATTERN,
   CREATEBLE_PARAMETER,
   UPDATEBLE_PARAMETER,
-  OTP_SMS_PATTERN
+  OTP_SMS_PATTERN,
 }
