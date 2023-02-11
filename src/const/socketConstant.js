@@ -18,7 +18,10 @@ const OFFLINE_EVENT = 'offline'
 const TYPING_EVENT = 'typing'
 const DISPLAY_TYPING_EVENT = 'display'
 
+const SEND_NOTIFICATION_EVENT = 'send_notification'
+
 const SOCKET_REDIS_PREIX = 'socket_ids_redis_prefix_'
+
 
 module.exports = {
   SOCKET_REDIS_PREIX,
@@ -34,5 +37,6 @@ module.exports = {
   ONLINE_EVENT,
   OFFLINE_EVENT,
   TYPING_EVENT,
-  DISPLAY_TYPING_EVENT
+  DISPLAY_TYPING_EVENT,
+  SEND_NOTIFICATION_EVENT
 }

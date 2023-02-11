@@ -1,3 +1,0 @@
-exports.followerConsumer = async () => {
-    
-}

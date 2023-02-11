@@ -12,6 +12,7 @@ const FollowerRouter = require('./Followers')
 const MessageRouter = require('./Messages')
 const ChatRouter = require('./Chats')
 const NewfeedRouter = require('./Newfeeds')
+const NotificationRouter = require('./Notifications')
 
 const passport = require('../../middlewares/passport');
 
@@ -30,5 +31,6 @@ router.use('/follower', passport.authenticate('jwt', {session: false}), Follower
 router.use('/message', passport.authenticate('jwt', {session: false}), MessageRouter)
 router.use('/chat', passport.authenticate('jwt', {session: false}), ChatRouter)
 router.use('/newfeeds', passport.authenticate('jwt', {session: false}), NewfeedRouter)
+router.use('/notifications', passport.authenticate('jwt', {session: false}), NotificationRouter)
 
 module.exports = router;

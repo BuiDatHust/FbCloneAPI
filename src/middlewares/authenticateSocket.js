@@ -18,7 +18,6 @@ exports.authenticateSocket = async (socket, next) => {
       0,
       -1
     )
-    console.log(currentUserTokens)
     socket.request.currentUser = user
     socket.request.deviceId = payload.deviceId
     next()
