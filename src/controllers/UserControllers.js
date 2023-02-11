@@ -4,8 +4,11 @@ const { NoData, PasswordNotMatch } = require('../libs/errors')
 const permitParameter = require('../libs/parameter')
 const { sendSuccess, sendError } = require('../libs/response')
 const UserModel = require('../models/users')
+const FriendsModel = require('../models/friends')
 const { findOneByFilter, findFriend } = require('../services/FriendServices')
 const UserServices = require('../services/UserServices')
+const _ = require('lodash')
+const { NO_REQUEST } = require('../const/friendConstant')
 
 exports.show = async (req, res) => {
   const user = req.currentUser
@@ -24,6 +27,7 @@ exports.update = async (req, res) => {
 
 exports.changePassword = async (req, res) => {
   try {
+    const user = req.currentUser
     const { oldPassword, newPassword, passwordConfirmation } = req.body
     const isMatch = await UserModel.comparePassword(
       oldPassword,
@@ -67,16 +71,49 @@ exports.blockUser = async (req, res) => {
     const user = req.currentUser
     const friend = await findFriend(userId)
     if (!friend) return sendError(res, 404, NoData)
-    switch(type) {
+    switch (type) {
       case 'block_message':
-        await UserServices.blockMessage(user, userId);
-        break;
+        await UserServices.blockMessage(user, userId)
+        break
       case 'block_diary':
-        await UserServices.blockDiary(user, userId);
-        break;
+        await UserServices.blockDiary(user, userId)
+        break
       default:
-        return sendSuccess(res, {});
+        return sendSuccess(res, {})
     }
     sendSuccess(res, {})
   } catch (error) {}
+}
+
+exports.getProfile = async (req, res) => {
+  try {
+    const loggedInUserId = req.currentUser._id.toString()
+    const userId = req.params.id
+
+    const user = await UserModel.findById(userId)
+    const newUser = _.cloneDeep({ ...user._doc })
+
+    // check if logged in user is friend of this user
+    if (userId !== loggedInUserId) {
+      const friend = await FriendsModel.findOne({
+        $or: [
+          // {
+          //   userId,
+          //   requestedUserId: loggedInUserId,
+          // },
+          {
+            userId: loggedInUserId,
+            requestedUserId: userId,
+          },
+        ],
+        // status: APPROVED,
+      })
+
+      newUser.friend_status = friend?.status ?? NO_REQUEST
+    }
+
+    sendSuccess(res, newUser)
+  } catch (error) {
+    sendError(res, 500, error.message, error)
+  }
 }

@@ -1,6 +1,7 @@
 const { Schema, default: mongoose } = require('mongoose')
 const { STATUS_ENUM } = require('../const/postConstant')
 const CommentServices = require('../services/CommentServices')
+const UserModel = require('./users')
 
 const postsSchema = new Schema(
   {
@@ -86,6 +87,14 @@ postsSchema.query.byPaginate = function (pageNumber, nPerPage, sortCondition) {
   return this.sort(sortCondition)
     .skip(pageNumber > 0 ? (pageNumber - 1) * nPerPage : 0)
     .limit(nPerPage)
+}
+
+postsSchema.query.populateData = function () {
+  return this.populate({
+    path: 'userId',
+    model: UserModel,
+    select: '_id username avatar is_online',
+  })
 }
 
 const PostModel = mongoose.model('Posts', postsSchema)

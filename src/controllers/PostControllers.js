@@ -16,7 +16,7 @@ exports.index = async (req, res) => {
     const filter = { userId }
     const perPage = req.query.perPage || settings.defaultPerPage
     const numberPage = req.query.numberPage || 1
-    const sortBy = req.query.sortBy || 'create_at'
+    const sortBy = req.query.sortBy || 'createdAt'
     const sortOrder = req.query.sortOrder || 'DESC'
     const sortCondition = {}
     sortCondition[sortBy] = sortOrder
@@ -28,9 +28,16 @@ exports.index = async (req, res) => {
       numberPage,
       sortCondition
     )
+
+    // decorate post with extra fields
+    const decoratedPosts = await PostServices.decoratePost(
+      userId,
+      posts.map((p) => p._doc)
+    )
+
     let countTotal = await PostServices.countDocument(filter)
     sendSuccess(res, {
-      posts,
+      posts: decoratedPosts,
       pagination: { total: countTotal, page: numberPage, perPage },
     })
   } catch (error) {
