@@ -77,7 +77,19 @@ const usersSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
-    address: {
+    current_address: {
+      type: String,
+      required: false,
+    },
+    from_address: {
+      type: String,
+      required: false,
+    },
+    worked_at: {
+      type: String,
+      required: false,
+    },
+    studied_at: {
       type: String,
       required: false,
     },
@@ -149,7 +161,7 @@ usersSchema.pre('save', async function (next) {
   next()
 })
 
-usersSchema.query.byPaginate = function (pageNumber, nPerPage,sortCondition) {
+usersSchema.query.byPaginate = function (pageNumber, nPerPage, sortCondition) {
   return this.sort(sortCondition)
     .skip(pageNumber > 0 ? (pageNumber - 1) * nPerPage : 0)
     .limit(nPerPage)

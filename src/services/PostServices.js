@@ -9,8 +9,8 @@ exports.findOne = async (filter) => {
 exports.create = async (attribute) => {
   const post = await PostModel.create(attribute)
   const url = `http://${process.env.APP_URL_HOST}/post/${post._id}`
-  post.url=url;
-  await post.save();
+  post.url = url
+  await post.save()
   return post
 }
 
@@ -32,7 +32,9 @@ exports.findAllByPaginate = async (
   numberPage,
   sortCondition
 ) => {
-  return PostModel.find(filter).byPaginate(numberPage, perPage, sortCondition)
+  return PostModel.find(filter)
+    .populateData()
+    .byPaginate(numberPage, perPage, sortCondition)
 }
 
 exports.countDocument = async (filter) => {
