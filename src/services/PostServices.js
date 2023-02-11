@@ -1,4 +1,5 @@
 const configs = require('../configs/configs')
+const PostReactionModel = require('../models/postReactions')
 const PostModel = require('../models/posts')
 
 exports.findOne = async (filter) => {
@@ -40,4 +41,22 @@ exports.findAllByPaginate = async (
 exports.countDocument = async (filter) => {
   const count = await PostModel.countDocuments(filter)
   return count
+}
+
+exports.decoratePost = async (userId, posts = []) => {
+  return await Promise.all(
+    posts.map(async (post) => {
+      const like = await PostReactionModel.findOne({
+        postId: post._id,
+        userId,
+        reactType: 'like',
+      })
+      const like_cnt = await PostReactionModel.countDocuments({
+        postId: post._id,
+        reactType: 'like',
+      })
+
+      return Object.assign(post, { is_liked: !!like, like_cnt })
+    })
+  )
 }

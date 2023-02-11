@@ -28,9 +28,16 @@ exports.index = async (req, res) => {
       numberPage,
       sortCondition
     )
+
+    // decorate post with extra fields
+    const decoratedPosts = await PostServices.decoratePost(
+      userId,
+      posts.map((p) => p._doc)
+    )
+
     let countTotal = await PostServices.countDocument(filter)
     sendSuccess(res, {
-      posts,
+      posts: decoratedPosts,
       pagination: { total: countTotal, page: numberPage, perPage },
     })
   } catch (error) {
