@@ -41,16 +41,16 @@ exports.findFriendRequestSentByPaginate = async (
   })
     .byPaginate(numberPage, perPage, sortCondition)
     .populate('userId', 'username avatar')
-  return friends.map((friend) => friend.userId)
+  return friends
+    .filter((friend) => friend.userId)
+    .map((friend) => friend.userId)
 }
 
 exports.findFriendRequestRecieved = async (id) => {
   return FriendModel.find({
     userId: id,
     status: PENDING,
-  })
-    .populate('requestedUserId', 'username avatar')
-    .populate('requestedUserId', 'username avatar')
+  }).populate('requestedUserId', 'username avatar')
 }
 
 exports.findFriendRequestRecievedByPaginate = async (
@@ -65,7 +65,9 @@ exports.findFriendRequestRecievedByPaginate = async (
   })
     .byPaginate(numberPage, perPage, sortCondition)
     .populate('requestedUserId', 'username avatar')
-  return friends.map((friend) => friend.requestedUserId)
+  return friends
+    .filter((friend) => friend.userId)
+    .map((friend) => friend.requestedUserId)
 }
 
 exports.findListFriendByPaginate = async (
@@ -102,8 +104,11 @@ exports.findListFriend = async (id) => {
   return frineds
 }
 
-exports.findOneByFilter = async (filter) => {
-  const friend = await FriendModel.findOne(filter)
+exports.findFriend = async (userId) => {
+  const friend = await FriendModel.findOne({
+    $or: [{ requestedUserId: userId }, { userId }],
+    status: APPROVED,
+  })
   return friend
 }
 

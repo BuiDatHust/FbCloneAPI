@@ -66,16 +66,42 @@ const commentsSchema = new Schema(
   }
 )
 
-commentsSchema.post('deleteOne',{document:true, query: false}, async function(doc, next){
-  await CommentModel.deleteMany({commentId: doc._id})
-  await PostModel.findByIdAndUpdate({_id: this.postId}, { $inc: {totalComment: -1}  })
-  next()
-})
-commentsSchema.post('save',{document:true, query: false}, async function(doc, next){
-  await PostModel.findByIdAndUpdate({_id: this.postId}, { $inc: {totalComment: 1}  })
-  next()
-})
-commentsSchema.query.byPaginate = function (pageNumber, nPerPage,sortCondition) {
+commentsSchema.post(
+  'deleteOne',
+  async function (doc, next) {
+    try {
+      await CommentModel.deleteMany({ commentId: doc._id })
+      await PostModel.findByIdAndUpdate(
+        { _id: this.postId },
+        { $inc: { totalComment: -1 } }
+      )
+    } catch (error) {
+      console.log(error)
+    }
+    next()
+  }
+)
+commentsSchema.post(
+  'save',
+  async function (doc, next) {
+    try {
+      await PostModel.findByIdAndUpdate(
+        { _id: doc.postId },
+        {
+          $inc: { totalComment: 1 },
+        }
+      )
+    } catch (error) {
+      console.log(error)
+    }
+    next()
+  }
+)
+commentsSchema.query.byPaginate = function (
+  pageNumber,
+  nPerPage,
+  sortCondition
+) {
   return this.sort(sortCondition)
     .skip(pageNumber > 0 ? (pageNumber - 1) * nPerPage : 0)
     .limit(nPerPage)

@@ -141,7 +141,7 @@ exports.indexRequest = async (req, res) => {
         countTotal = await FriendServices.countListRequestedFriend(user._id)
         break
       case 'recieved':
-        friendRequesteds = await FriendServices.findFriendRequestRecieved(
+        friendRequesteds = await FriendServices.findFriendRequestRecievedByPaginate(
           user._id,
           numberPage,
           perPage,

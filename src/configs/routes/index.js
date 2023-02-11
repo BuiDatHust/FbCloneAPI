@@ -19,12 +19,12 @@ const router = Router();
 
 router.use('/password', PasswordRouter);
 router.use('/auth', AuthRouter);
-router.use('/user', passport.authenticate('jwt', {session: false}), UserRouter);
+router.use('/user', UserRouter);
 router.use('/upload',  passport.authenticate('jwt', {session: false}), UploadRouter);
-router.use('/post',  passport.authenticate('jwt', {session: false}), PostRouter);
-router.use('/comment',  passport.authenticate('jwt', {session: false}), CommentRouter);
-router.use('/post_reaction',  passport.authenticate('jwt', {session: false}), PostReactionRouter);
-router.use('/comment_reaction',  passport.authenticate('jwt', {session: false}), CommentReactionRouter);
+router.use('/post',  PostRouter);
+router.use('/comment', CommentRouter);
+router.use('/post_reaction',  PostReactionRouter);
+router.use('/comment_reaction',  CommentReactionRouter);
 router.use('/friend',  passport.authenticate('jwt', {session: false}), FriendRouter)
 router.use('/follower', passport.authenticate('jwt', {session: false}), FollowerRouter)
 router.use('/message', passport.authenticate('jwt', {session: false}), MessageRouter)

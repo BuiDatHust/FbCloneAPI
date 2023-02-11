@@ -1,6 +1,7 @@
 const FriendServices = require('../services/FriendServices')
 
 exports.getSameFriend = async function (userId, users) {
+  if(!users.length) return users;
   const result = [...users]
   const friendIds = (await FriendServices.findListFriend(userId)).map((friend) => friend._id)
   for (const user of result) {

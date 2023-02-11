@@ -41,7 +41,7 @@ exports.index = async (req, res) => {
 exports.show = async (req, res) => {
   try {
     const { postId } = req.params
-    const post = await PostServices.findOne({ postId })
+    const post = await PostServices.findOne({ _id: postId })
     if (!post) return sendError(res, 404, NoData)
     sendSuccess(res, { post })
   } catch (error) {
@@ -52,11 +52,8 @@ exports.show = async (req, res) => {
 exports.create = async (req, res) => {
   try {
     const params = permitParameter(req.body, CREATEABLE_PARAMETER)
-    const { baseUrl } = req.body
     params.userId = req.currentUser._id
     const post = await PostServices.create(params)
-    const url = baseUrl + post._id
-    await PostServices.update(post.id, { url })
     sendSuccess(res, { post })
   } catch (error) {
     sendError(res, 500, error.message, error)

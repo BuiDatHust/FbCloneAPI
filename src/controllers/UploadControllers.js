@@ -64,11 +64,11 @@ exports.createFile = async (req, res) => {
         source: undefined,
       }
       if (file.mimetype.split('/')[0] === settings.prefix.imageMime) {
-        resultItem.source = `${settings.imageStorageHost}/${singleImageUpload(
+        resultItem.source = `${settings.imageStorageHost}/${await singleImageUpload(
           file
         )}`
       } else if (file.mimetype.split('/')[0] === settings.prefix.videoMime) {
-        resultItem.source = `${settings.videoStorageHost}/${singleVideoUpload(
+        resultItem.source = `${settings.videoStorageHost}/${await singleVideoUpload(
           file
         )}`
       } else {

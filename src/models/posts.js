@@ -82,7 +82,7 @@ postsSchema.post(
     next()
   }
 )
-postsSchema.query.byPaginate = function (pageNumber, nPerPage,sortCondition) {
+postsSchema.query.byPaginate = function (pageNumber, nPerPage, sortCondition) {
   return this.sort(sortCondition)
     .skip(pageNumber > 0 ? (pageNumber - 1) * nPerPage : 0)
     .limit(nPerPage)

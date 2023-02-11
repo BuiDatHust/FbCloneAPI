@@ -1,3 +1,4 @@
+const configs = require('../configs/configs')
 const PostModel = require('../models/posts')
 
 exports.findOne = async (filter) => {
@@ -7,6 +8,9 @@ exports.findOne = async (filter) => {
 
 exports.create = async (attribute) => {
   const post = await PostModel.create(attribute)
+  const url = `http://${process.env.APP_URL_HOST}/post/${post._id}`
+  post.url=url;
+  await post.save();
   return post
 }
 

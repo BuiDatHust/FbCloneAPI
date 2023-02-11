@@ -59,11 +59,6 @@ friendsSchema.post('findOneAndUpdate', async function (doc, next){
     }
     next()
 })
-friendsSchema.query.byPaginate = function (pageNumber, nPerPage,sortCondition) {
-    return this.sort(sortCondition)
-      .skip(pageNumber > 0 ? (pageNumber - 1) * nPerPage : 0)
-      .limit(nPerPage)
-}
 
 const FriendModel = mongoose.model('Friends', friendsSchema)
 

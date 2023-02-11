@@ -149,6 +149,12 @@ usersSchema.pre('save', async function (next) {
   next()
 })
 
+usersSchema.query.byPaginate = function (pageNumber, nPerPage,sortCondition) {
+  return this.sort(sortCondition)
+    .skip(pageNumber > 0 ? (pageNumber - 1) * nPerPage : 0)
+    .limit(nPerPage)
+}
+
 usersSchema.statics.comparePassword = async (password, hashedPassword) => {
   const isMatch = await bcrypt.compare(password, hashedPassword)
   return isMatch

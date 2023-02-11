@@ -43,5 +43,8 @@ module.exports = {
     url: process.env.RABBITMQ_URL,
     delayTime:process.env.RABBITMQ_DELAY_TIME,
     numRetry: process.env.RABBITMQ_NUM_RETRY, 
+  },
+  app: {
+    host: process.env.APP_URL_HOST
   }
 }
