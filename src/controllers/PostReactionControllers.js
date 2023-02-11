@@ -6,6 +6,21 @@ const settings = require('../configs/settings')
 exports.create = async (req, res) => {
   try {
     const { reactType, postId } = req.body
+
+    const reaction = await PostReactionServices.findOne({
+      reactType,
+      postId,
+      userId: req.currentUser._id,
+    })
+
+    if (reaction) {
+      // already react => delete
+      await PostReactionServices.delete({ _id: reaction._id })
+      sendSuccess(res, {})
+      return
+    }
+
+    // if not => create new one
     const postReaction = await PostReactionServices.create({
       reactType,
       postId,
@@ -37,7 +52,7 @@ exports.index = async (req, res) => {
     const { postId } = req.params
     const filter = { postId }
     const { reactType } = req.query
-    if(reactType) filter.reactType = reactType
+    if (reactType) filter.reactType = reactType
     const perPage = req.query.perPage || settings.defaultPerPage
     const numberPage = req.query.numberPage || 1
     const sortBy = req.query.sortBy || 'create_at'
