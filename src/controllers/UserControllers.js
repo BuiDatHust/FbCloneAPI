@@ -4,9 +4,11 @@ const { NoData, PasswordNotMatch } = require('../libs/errors')
 const permitParameter = require('../libs/parameter')
 const { sendSuccess, sendError } = require('../libs/response')
 const UserModel = require('../models/users')
+const FriendsModel = require('../models/friends')
 const { findOneByFilter, findFriend } = require('../services/FriendServices')
 const UserServices = require('../services/UserServices')
 const _ = require('lodash')
+const { NO_REQUEST } = require('../const/friendConstant')
 
 exports.show = async (req, res) => {
   const user = req.currentUser
@@ -95,19 +97,19 @@ exports.getProfile = async (req, res) => {
     if (userId !== loggedInUserId) {
       const friend = await FriendsModel.findOne({
         $or: [
-          {
-            userId,
-            requestedUserId: loggedInUserId,
-          },
+          // {
+          //   userId,
+          //   requestedUserId: loggedInUserId,
+          // },
           {
             userId: loggedInUserId,
             requestedUserId: userId,
           },
         ],
-        status: APPROVED,
+        // status: APPROVED,
       })
 
-      newUser.is_friend = !!friend
+      newUser.friend_status = friend?.status ?? NO_REQUEST
     }
 
     sendSuccess(res, newUser)
