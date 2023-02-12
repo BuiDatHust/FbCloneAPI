@@ -9,7 +9,7 @@ const getNew = async (req, res) => {
     const user = req.currentUser
     const perPage = req.query.perPage || settings.defaultPerPage
     const numberPage = req.query.numberPage || 1
-    const sortBy = req.query.sortBy || 'create_at'
+    const sortBy = req.query.sortBy || 'createdAt'
     const sortOrder = req.query.sortOrder || 'DESC'
     const sortCondition = {}
     sortCondition[sortBy] = sortOrder

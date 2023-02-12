@@ -9,6 +9,7 @@ const { findFriend } = require('../services/FriendServices')
 const UserServices = require('../services/UserServices')
 const _ = require('lodash')
 const { NO_REQUEST } = require('../const/friendConstant')
+const { getSameFriend } = require('../decorators/FriendDecorators')
 
 exports.show = async (req, res) => {
   const user = req.currentUser
@@ -47,7 +48,7 @@ exports.suggestUsers = async (req, res) => {
   try {
     const perPage = req.query.perPage || settings.defaultPerPage
     const numberPage = req.query.numberPage || 1
-    const sortBy = req.query.sortBy || 'create_at'
+    const sortBy = req.query.sortBy || 'createdAt'
     const sortOrder = req.query.sortOrder || 'DESC'
     const sortCondition = {}
     sortCondition[sortBy] = sortOrder
@@ -56,8 +57,11 @@ exports.suggestUsers = async (req, res) => {
       numberPage,
       perPage
     )
+
+    const result = await getSameFriend(req.currentUser._id, suggestUsers)
+
     sendSuccess(res, {
-      users: suggestUsers,
+      users: result,
       pagination: { total, page: numberPage, perPage },
     })
   } catch (error) {
@@ -102,8 +106,8 @@ exports.getProfile = async (req, res) => {
           //   requestedUserId: loggedInUserId,
           // },
           {
-            userId: loggedInUserId,
-            requestedUserId: userId,
+            userId,
+            requestedUserId: loggedInUserId,
           },
         ],
         // status: APPROVED,

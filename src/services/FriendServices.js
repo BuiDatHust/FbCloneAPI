@@ -9,10 +9,7 @@ const {
 const FriendModel = require('../models/friends')
 const publishToExchange = require('./rabbitmq/publisher')
 
-exports.createFriendRequest = async function ({
-  userId,
-  requestedUserId,
-}) {
+exports.createFriendRequest = async function ({ userId, requestedUserId }) {
   const existedFriend = await this.findOneByFilter({
     userId,
     requestedUserId,
@@ -33,7 +30,19 @@ exports.createFriendRequest = async function ({
       { deviceId, userId, type: NOTIFICATION_TYPE_NEW_REQUEST_FRIEND }
     )
   }
-  return friend 
+  return friend
+}
+
+exports.cancelFriendRequest = async function ({ userId, requestedUserId }) {
+  const existedFriend = await this.findOneByFilter({
+    userId,
+    requestedUserId,
+  })
+  if (!existedFriend || existedFriend.status !== PENDING) {
+    return
+  }
+
+  return FriendModel.deleteOne({ userId, requestedUserId })
 }
 
 exports.updateFriendRequest = async (userId, requestedUserId, attribute) => {
@@ -115,6 +124,18 @@ exports.findListFriend = async (id) => {
   const friendRequesteds = await FriendModel.find({
     $or: [{ requestedUserId: id }, { userId: id }],
     status: APPROVED,
+  })
+  const frineds = friendRequesteds.map((friendRequested) => {
+    return friendRequested.userId._id === id
+      ? friendRequested.requestedUserId
+      : friendRequested.userId
+  })
+  return frineds
+}
+
+exports.findListFriendAndRequest = async (id) => {
+  const friendRequesteds = await FriendModel.find({
+    $or: [{ requestedUserId: id }, { userId: id }],
   })
   const frineds = friendRequesteds.map((friendRequested) => {
     return friendRequested.userId._id === id
@@ -229,4 +250,8 @@ exports.countListSameFriends = async (userId, friendIds) => {
       },
     ],
   })
+}
+
+exports.findOneByFilter = async (filter) => {
+  return FriendModel.findOne(filter)
 }

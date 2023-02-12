@@ -20,16 +20,17 @@ exports.updateUser = async (id, attribute) => {
 }
 
 exports.getListSuggested = async (user, numberPage, perPage, sortCondition) => {
-  const friendIds = await friendServices.findListFriend(user._id)
+  const friendIds = await friendServices.findListFriendAndRequest(user._id)
   const filter = {
     countryCode: user.countryCode,
-    _id: { $nin: friendIds },
+    _id: { $nin: [...friendIds, user._id] },
   }
   const suggestUsers = await UserModel.find(filter).byPaginate(
     numberPage,
     perPage,
     sortCondition
   )
+
   const total = await this.countDocument(filter)
   return { suggestUsers, total }
 }
