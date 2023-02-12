@@ -16,7 +16,7 @@ exports.create = async (req, res) => {
       userId,
       requestedUserId,
       user: req.currentUser,
-      deviceId: req.deviceId
+      deviceId: req.deviceId,
     })
     if (!friend) return sendError(res, 404, NoData)
     sendSuccess(res, { friend })
@@ -31,6 +31,24 @@ exports.indexCancelRequest = async (req, res) => {
     const requestedUserId = req.currentUser._id
 
     await FriendServices.cancelFriendRequest({
+      userId,
+      requestedUserId,
+    })
+
+    sendSuccess(res, {})
+  } catch (error) {
+    sendError(res, 500, error.message, error)
+  }
+}
+
+exports.indexDeleteFriend = async (req, res) => {
+  try {
+    const { userId } = req.params
+    const requestedUserId = req.currentUser._id
+
+    console.log({ userId, requestedUserId })
+
+    await FriendServices.deleteFriendRelation({
       userId,
       requestedUserId,
     })
@@ -57,6 +75,8 @@ exports.approved = async (req, res) => {
     await FriendServices.updateFriendRequest(loggedInUserId, userId, {
       status: APPROVED,
     })
+
+    await FriendServices.deleteMany({ userId, requestedUserId: loggedInUserId })
 
     sendSuccess(res, {})
   } catch (error) {

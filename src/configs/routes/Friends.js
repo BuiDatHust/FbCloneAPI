@@ -9,6 +9,9 @@ router.post('/:userId', FriendController.create)
 router.patch('/approve/:userId', FriendController.approved)
 router.patch('/reject/:userId', FriendController.reject)
 
+// remove friend when already friend
+router.delete('/destroy/:userId', FriendController.indexDeleteFriend)
+
 // cancel friend request
 router.delete('/:userId', FriendController.indexCancelRequest)
 

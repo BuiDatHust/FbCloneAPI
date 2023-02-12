@@ -1,6 +1,7 @@
 const { Schema, default: mongoose } = require('mongoose')
 const { POST_TYPE, COMMENT_TYPE } = require('../const/postConstant')
 const PostModel = require('./posts')
+const UserModel = require('./users')
 
 const commentsSchema = new Schema(
   {
@@ -26,7 +27,7 @@ const commentsSchema = new Schema(
     },
     describe: {
       type: String,
-      required: true,
+      required: false,
     },
     images: {
       type: Array,
@@ -66,37 +67,32 @@ const commentsSchema = new Schema(
   }
 )
 
-commentsSchema.post(
-  'deleteOne',
-  async function (doc, next) {
-    try {
-      await CommentModel.deleteMany({ commentId: doc._id })
-      await PostModel.findByIdAndUpdate(
-        { _id: this.postId },
-        { $inc: { totalComment: -1 } }
-      )
-    } catch (error) {
-      console.log(error)
-    }
-    next()
+commentsSchema.post('deleteOne', async function (doc, next) {
+  try {
+    await CommentModel.deleteMany({ commentId: doc._id })
+    await PostModel.findByIdAndUpdate(
+      { _id: this.postId },
+      { $inc: { totalComment: -1 } }
+    )
+  } catch (error) {
+    console.log(error)
   }
-)
-commentsSchema.post(
-  'save',
-  async function (doc, next) {
-    try {
-      await PostModel.findByIdAndUpdate(
-        { _id: doc.postId },
-        {
-          $inc: { totalComment: 1 },
-        }
-      )
-    } catch (error) {
-      console.log(error)
-    }
-    next()
+  next()
+})
+commentsSchema.post('save', async function (doc, next) {
+  const postModel = this.model('Posts')
+  try {
+    await postModel.findByIdAndUpdate(
+      { _id: doc.postId },
+      {
+        $inc: { totalComment: 1 },
+      }
+    )
+  } catch (error) {
+    console.log(error)
   }
-)
+  next()
+})
 commentsSchema.query.byPaginate = function (
   pageNumber,
   nPerPage,
@@ -105,6 +101,14 @@ commentsSchema.query.byPaginate = function (
   return this.sort(sortCondition)
     .skip(pageNumber > 0 ? (pageNumber - 1) * nPerPage : 0)
     .limit(nPerPage)
+}
+
+commentsSchema.query.populateData = function () {
+  return this.populate({
+    path: 'userId',
+    model: UserModel,
+    select: '_id username avatar is_online',
+  })
 }
 
 const CommentModel = mongoose.model('Comments', commentsSchema)

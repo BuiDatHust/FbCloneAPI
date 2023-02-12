@@ -8,7 +8,7 @@ const FriendsModel = require('../models/friends')
 const { findFriend } = require('../services/FriendServices')
 const UserServices = require('../services/UserServices')
 const _ = require('lodash')
-const { NO_REQUEST } = require('../const/friendConstant')
+const { NO_REQUEST, APPROVED, PENDING } = require('../const/friendConstant')
 const { getSameFriend } = require('../decorators/FriendDecorators')
 
 exports.show = async (req, res) => {
@@ -97,14 +97,16 @@ exports.getProfile = async (req, res) => {
     const user = await UserModel.findById(userId)
     const newUser = _.cloneDeep({ ...user._doc })
 
+    console.log({ loggedInUserId, userId })
+
     // check if logged in user is friend of this user
     if (userId !== loggedInUserId) {
       const friend = await FriendsModel.findOne({
         $or: [
-          // {
-          //   userId,
-          //   requestedUserId: loggedInUserId,
-          // },
+          {
+            userId: loggedInUserId,
+            requestedUserId: userId,
+          },
           {
             userId,
             requestedUserId: loggedInUserId,
@@ -113,7 +115,16 @@ exports.getProfile = async (req, res) => {
         // status: APPROVED,
       })
 
-      newUser.friend_status = friend?.status ?? NO_REQUEST
+      if (friend?.status === APPROVED) {
+        newUser.friend_status = APPROVED
+      } else if (
+        friend?.status === PENDING &&
+        friend?.requestedUserId === loggedInUserId
+      ) {
+        newUser.friend_status = PENDING
+      } else {
+        newUser.friend_status = friend?.status ?? NO_REQUEST
+      }
     }
 
     sendSuccess(res, newUser)
@@ -122,12 +133,17 @@ exports.getProfile = async (req, res) => {
   }
 }
 
-exports.search = async (req,res) => {
+exports.search = async (req, res) => {
   try {
     const { searchText } = req.query
     const perPage = req.query.perPage || settings.defaultPerPage
     const numberPage = req.query.numberPage || 1
-    const {users, total} = await UserServices.searchUser(searchText,numberPage,perPage, req.currentUser._id)
+    const { users, total } = await UserServices.searchUser(
+      searchText,
+      numberPage,
+      perPage,
+      req.currentUser._id
+    )
     sendSuccess(res, {
       users,
       pagination: { total, page: numberPage, perPage },

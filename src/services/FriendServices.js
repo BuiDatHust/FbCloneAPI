@@ -16,20 +16,21 @@ exports.createFriendRequest = async function ({ userId, requestedUserId }) {
   })
   if (existedFriend) {
     if (existedFriend.status === REJECTED) {
-      existedFriend.overwrite({ status: PENDING })
+      // existedFriend.overwrite({ status: PENDING })
+      existedFriend.status = PENDING
       return existedFriend.save()
     }
     return null
   }
   const friend = await FriendModel.create({ userId, requestedUserId })
-  if (friend) {
-    await publishToExchange(
-      DIRECT_EXCHANGE_NAME,
-      'direct',
-      NOTIFICATION_QUEUE,
-      { deviceId, userId, type: NOTIFICATION_TYPE_NEW_REQUEST_FRIEND }
-    )
-  }
+  // if (friend) {
+  //   await publishToExchange(
+  //     DIRECT_EXCHANGE_NAME,
+  //     'direct',
+  //     NOTIFICATION_QUEUE,
+  //     { deviceId, userId, type: NOTIFICATION_TYPE_NEW_REQUEST_FRIEND }
+  //   )
+  // }
   return friend
 }
 
@@ -43,6 +44,26 @@ exports.cancelFriendRequest = async function ({ userId, requestedUserId }) {
   }
 
   return FriendModel.deleteOne({ userId, requestedUserId })
+}
+
+exports.deleteFriendRelation = async function ({ userId, requestedUserId }) {
+  const existedFriend = await this.findOneByFilter({
+    $or: [
+      { userId, requestedUserId },
+      { requestedUserId: userId, userId: requestedUserId },
+    ],
+    status: APPROVED,
+  })
+
+  if (!existedFriend) {
+    return
+  }
+
+  await FriendModel.deleteOne({ userId, requestedUserId })
+  await FriendModel.deleteOne({
+    requestedUserId: userId,
+    userId: requestedUserId,
+  })
 }
 
 exports.updateFriendRequest = async (userId, requestedUserId, attribute) => {
@@ -94,6 +115,7 @@ exports.findFriendRequestRecievedByPaginate = async (
   })
     .byPaginate(numberPage, perPage, sortCondition)
     .populate('requestedUserId', 'username avatar')
+
   return friends
     .filter((friend) => friend.userId)
     .map((friend) => friend.requestedUserId)
@@ -113,10 +135,11 @@ exports.findListFriendByPaginate = async (
     .populate('requestedUserId', 'username avatar')
     .populate('userId', 'username avatar')
   const frineds = friendRequesteds.map((friendRequested) => {
-    return friendRequested.userId._id === id
+    return friendRequested.userId._id.toString() === id.toString()
       ? friendRequested.requestedUserId
       : friendRequested.userId
   })
+
   return frineds
 }
 
@@ -126,7 +149,7 @@ exports.findListFriend = async (id) => {
     status: APPROVED,
   })
   const frineds = friendRequesteds.map((friendRequested) => {
-    return friendRequested.userId._id === id
+    return friendRequested.userId._id.toString() === id.toString()
       ? friendRequested.requestedUserId
       : friendRequested.userId
   })
@@ -136,9 +159,10 @@ exports.findListFriend = async (id) => {
 exports.findListFriendAndRequest = async (id) => {
   const friendRequesteds = await FriendModel.find({
     $or: [{ requestedUserId: id }, { userId: id }],
+    status: { $ne: REJECTED },
   })
   const frineds = friendRequesteds.map((friendRequested) => {
-    return friendRequested.userId._id === id
+    return friendRequested.userId._id.toString() === id.toString()
       ? friendRequested.requestedUserId
       : friendRequested.userId
   })
@@ -254,4 +278,8 @@ exports.countListSameFriends = async (userId, friendIds) => {
 
 exports.findOneByFilter = async (filter) => {
   return FriendModel.findOne(filter)
+}
+
+exports.deleteMany = async (filter) => {
+  return FriendModel.deleteMany(filter)
 }

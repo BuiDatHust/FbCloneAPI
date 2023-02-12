@@ -3,7 +3,7 @@ const PostReactionModel = require('../models/postReactions')
 const PostModel = require('../models/posts')
 
 exports.findOne = async (filter) => {
-  const post = await PostModel.findOne(filter)
+  const post = await PostModel.findOne(filter).populateData()
   return post
 }
 

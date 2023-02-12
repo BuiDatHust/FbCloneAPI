@@ -51,10 +51,10 @@ friendsSchema.post('findOneAndUpdate', async function (doc, next) {
         userId: doc.requestedUserId,
         follower: doc.userId,
       }),
-      ChatSettingServices.createChat({
-        firstUserId: doc.requestedUserId,
-        follower: doc.userId,
-      }),
+      // ChatSettingServices.createChat({
+      //   firstUserId: doc.requestedUserId,
+      //   follower: doc.userId,
+      // }),
     ])
   }
   if (doc.status === REJECTED && updatedData['status']) {
@@ -65,6 +65,24 @@ friendsSchema.post('findOneAndUpdate', async function (doc, next) {
   }
   next()
 })
+
+friendsSchema.post(
+  'deleteOne',
+  { document: true, query: false },
+  async function (doc, next) {
+    if (!doc) {
+      next()
+      return
+    }
+
+    await Promise.all([
+      FollowerService.unfollow(doc.userId, doc.requestedUserId),
+      FollowerService.unfollow(doc.requestedUserId, doc.userId),
+    ])
+
+    next()
+  }
+)
 
 friendsSchema.query.byPaginate = function (
   pageNumber,
