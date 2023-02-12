@@ -12,6 +12,8 @@ exports.create = async (req, res) => {
     const friend = await FriendServices.createFriendRequest({
       userId,
       requestedUserId,
+      user: req.currentUser,
+      deviceId: req.deviceId
     })
     if (!friend) return sendError(res, 404, NoData)
     sendSuccess(res, { friend })

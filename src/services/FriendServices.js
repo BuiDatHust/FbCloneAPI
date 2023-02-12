@@ -1,7 +1,18 @@
 const { PENDING, APPROVED, REJECTED } = require('../const/friendConstant')
+const {
+  DIRECT_EXCHANGE_NAME,
+  NOTIFICATION_QUEUE,
+} = require('../const/messageQueueConstant')
+const {
+  NOTIFICATION_TYPE_NEW_REQUEST_FRIEND,
+} = require('../const/notificationConstant')
 const FriendModel = require('../models/friends')
+const publishToExchange = require('./rabbitmq/publisher')
 
-exports.createFriendRequest = async function ({ userId, requestedUserId }) {
+exports.createFriendRequest = async function ({
+  userId,
+  requestedUserId,
+}) {
   const existedFriend = await this.findOneByFilter({
     userId,
     requestedUserId,
@@ -13,7 +24,16 @@ exports.createFriendRequest = async function ({ userId, requestedUserId }) {
     }
     return null
   }
-  return FriendModel.create({ userId, requestedUserId })
+  const friend = await FriendModel.create({ userId, requestedUserId })
+  if (friend) {
+    await publishToExchange(
+      DIRECT_EXCHANGE_NAME,
+      'direct',
+      NOTIFICATION_QUEUE,
+      { deviceId, userId, type: NOTIFICATION_TYPE_NEW_REQUEST_FRIEND }
+    )
+  }
+  return friend 
 }
 
 exports.updateFriendRequest = async (userId, requestedUserId, attribute) => {
@@ -109,6 +129,11 @@ exports.findFriend = async (userId) => {
     $or: [{ requestedUserId: userId }, { userId }],
     status: APPROVED,
   })
+  return friend
+}
+
+exports.findOneByFilter = async (filter) => {
+  const friend = await FriendModel.findOne(filter)
   return friend
 }
 

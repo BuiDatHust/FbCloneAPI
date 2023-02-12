@@ -16,7 +16,7 @@ exports.signUp = async (req, res) => {
   try {
     const { phone, password, passwordConfirmation } = req.body
     const params = permitParameter(req.body, CREATEBLE_PARAMETER)
-    const existedUser = await UserServices.findOne({ phone })
+    const existedUser = await UserServices.findOneUser({ phone })
     if (existedUser) return sendError(res, 400, RegiteredPhone)
     if (password !== passwordConfirmation)
       return sendError(res, 400, PasswordNotMatch)
@@ -31,7 +31,7 @@ exports.signIn = async (req, res) => {
   try {
     const { phone, password, deviceId } = req.body
     if (!deviceId) return sendError(res, 404, DeviceIdIsMissing)
-    const existedUser = await UserServices.findOne({ phone })
+    const existedUser = await UserServices.findOneUser({ phone })
     if (!existedUser) return sendError(res, 404, NoData)
     const isMatch = await UserModel.comparePassword(
       password,

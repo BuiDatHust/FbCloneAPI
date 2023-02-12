@@ -11,7 +11,7 @@ exports.authenticateSocket = async (socket, next) => {
     const payload = jwt.verify(token, settings.jwt.secret, {
       algorithms: ['HS256'],
     })
-    const user = await UserServices.findOne({ _id: payload.id })
+    const user = await UserServices.findOneUser({ _id: payload.id })
     if (!user) return next(new Error(Unauthorized.message))
     const currentUserTokens = await redisClient.lRange(
       `${SOCKET_REDIS_PREIX}${payload.id}`,

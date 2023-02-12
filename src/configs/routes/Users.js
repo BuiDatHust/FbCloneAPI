@@ -35,5 +35,10 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   UserController.getProfile
 )
+router.get(
+  '/search',
+  passport.authenticate('jwt', { session: false }),
+  UserController.search
+)
 
 module.exports = router

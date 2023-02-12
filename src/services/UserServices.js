@@ -1,7 +1,7 @@
 const UserModel = require('../models/users')
 const friendServices = require('../services/FriendServices')
 
-exports.findOne = async (filter) => {
+exports.findOneUser = async (filter) => {
   const user = await UserModel.findOne(filter)
   return user
 }
@@ -30,7 +30,6 @@ exports.getListSuggested = async (user, numberPage, perPage, sortCondition) => {
     perPage,
     sortCondition
   )
-  console.log(suggestUsers)
   const total = await this.countDocument(filter)
   return { suggestUsers, total }
 }
@@ -50,8 +49,8 @@ exports.blockMessage = async (user, userId) => {
       }
     )
   }
-  user.blocked_inbox.push(userId);
-  return user.save();
+  user.blocked_inbox.push(userId)
+  return user.save()
 }
 
 exports.blockDiary = async (user, userId) => {
@@ -65,6 +64,16 @@ exports.blockDiary = async (user, userId) => {
       }
     )
   }
-  user.blocked_diary.push(userId);
-  return user.save();
+  user.blocked_diary.push(userId)
+  return user.save()
+}
+
+exports.searchUser = async (searchText, pageNumber, nPerPage, userId) => {
+  const filter = { $text: { $search: searchText }, _id: { $ne: userId } }
+  const sortCondition = { score: { $meta: 'textScore' } }
+  const users = await UserModel.find(filter, {
+    score: { $meta: 'textScore' },
+  }).byPaginate(pageNumber, nPerPage, sortCondition)
+  const total = await UserModel.countDocuments(filter)
+  return { users, total }
 }

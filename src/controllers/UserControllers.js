@@ -5,7 +5,7 @@ const permitParameter = require('../libs/parameter')
 const { sendSuccess, sendError } = require('../libs/response')
 const UserModel = require('../models/users')
 const FriendsModel = require('../models/friends')
-const { findOneByFilter, findFriend } = require('../services/FriendServices')
+const { findFriend } = require('../services/FriendServices')
 const UserServices = require('../services/UserServices')
 const _ = require('lodash')
 const { NO_REQUEST } = require('../const/friendConstant')
@@ -113,6 +113,21 @@ exports.getProfile = async (req, res) => {
     }
 
     sendSuccess(res, newUser)
+  } catch (error) {
+    sendError(res, 500, error.message, error)
+  }
+}
+
+exports.search = async (req,res) => {
+  try {
+    const { searchText } = req.query
+    const perPage = req.query.perPage || settings.defaultPerPage
+    const numberPage = req.query.numberPage || 1
+    const {users, total} = await UserServices.searchUser(searchText,numberPage,perPage, req.currentUser._id)
+    sendSuccess(res, {
+      users,
+      pagination: { total, page: numberPage, perPage },
+    })
   } catch (error) {
     sendError(res, 500, error.message, error)
   }

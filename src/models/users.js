@@ -54,12 +54,12 @@ const usersSchema = new mongoose.Schema(
     },
     firstName: {
       type: String,
-      required: false,
+      required: true,
       max: [30, 'Phai duoi 30 ky tu, co {VALUE} ky tu'],
     },
     lastName: {
       type: String,
-      required: false,
+      required: true,
       max: [30, 'Phai duoi 30 ky tu, co {VALUE} ky tu'],
     },
     gender: {
@@ -75,21 +75,9 @@ const usersSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      required: false,
+      required: true,
     },
-    current_address: {
-      type: String,
-      required: false,
-    },
-    from_address: {
-      type: String,
-      required: false,
-    },
-    worked_at: {
-      type: String,
-      required: false,
-    },
-    studied_at: {
+    address: {
       type: String,
       required: false,
     },
@@ -135,6 +123,10 @@ const usersSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    device_ids: {
+      type: [String],
+      required: false,
+    },
     createdAt: {
       type: Date,
       default: Date.now,
@@ -149,7 +141,6 @@ const usersSchema = new mongoose.Schema(
   }
 )
 
-usersSchema.index({ phone: 'text' })
 usersSchema.pre('save', async function (next) {
   const user = this
   const salt = await bcrypt.genSalt(settings.hashSalt)
@@ -212,6 +203,11 @@ usersSchema.statics.deleteToken = async (deviceId, id) => {
     await redisClient.lPop(`${WHITELIST_ACCESS_TOKEN_PATTERN}${id}_${deviceId}`)
     totalToken -= 1
   }
+  await this.findByIdAndUpdate(id, {
+    $pullAll: {
+      device_ids: deviceId,
+    },
+  })
 }
 
 usersSchema.statics.deleteAllToken = async (id) => {
@@ -226,7 +222,29 @@ usersSchema.statics.deleteAllToken = async (id) => {
       totalToken -= 1
     }
   }
+  await this.findByIdAndUpdate(id, {
+    $pullAll: {
+      device_ids: [],
+    },
+  })
 }
+
+usersSchema.index(
+  {
+    username: 'text',
+    firstName: 'text',
+    lastName: 'text',
+    description: 'text',
+  },
+  {
+    weights: {
+      username: 5,
+      firstName: 4,
+      lastName: 3,
+      description: 2,
+    },
+  }
+)
 
 const UserModel = mongoose.model('Users', usersSchema)
 

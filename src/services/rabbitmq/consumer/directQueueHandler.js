@@ -1,6 +1,5 @@
 const {
-  NOTIFICATION_QUEUE,
-  DIRECT_QUEUE,
+  NOTIFICATION_QUEUE
 } = require('../../../const/messageQueueConstant')
 const { notificationHandler } = require('./notificationQueueHandler')
 

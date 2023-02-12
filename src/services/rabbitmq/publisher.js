@@ -1,6 +1,6 @@
 const rabbitmq = require('../../initializers/rabbitmq')
 
-const publish = async (exchangeName, exchangeType, routingKey, payload) => {
+const publishToExchange = async (exchangeName, exchangeType, routingKey, payload) => {
   await rabbitmq.channel.assertExchange(exchangeName, exchangeType, {
     durable: true,
   })
@@ -12,4 +12,4 @@ const publish = async (exchangeName, exchangeType, routingKey, payload) => {
   )
 }
 
-module.exports = publish
+module.exports = publishToExchange

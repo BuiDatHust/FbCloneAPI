@@ -10,7 +10,7 @@ const UserServices = require('../services/UserServices')
 exports.create = async (req, res) => {
   try {
     const { phone } = req.body
-    const user = await UserServices.findOne({ phone })
+    const user = await UserServices.findOneUser({ phone })
     const userId = user._id.toString();
     if (!user) return sendError(res, 404, NoData)
     const otp = await generateOtpCode(userId)
@@ -30,7 +30,7 @@ exports.create = async (req, res) => {
 exports.verifyCode = async (req, res) => {
   try {
     const { phone, code } = req.body
-    const user = await UserServices.findOne({ phone })
+    const user = await UserServices.findOneUser({ phone })
     if (!user) return sendError(res, 404, NoData)
     const otp = await redisClient.get(`${OTP_SMS_PATTERN}${user._id}`)
     if (!otp) return sendError(res, 216, OtpNotCorrect)
@@ -44,7 +44,7 @@ exports.verifyCode = async (req, res) => {
 exports.newPassword = async (req, res) => {
   try {
     const { phone, password, passwordConfirmation } = req.body
-    const user = await UserServices.findOne({ phone })
+    const user = await UserServices.findOneUser({ phone })
     if (!user) return sendError(res, 404, NoData)
     const otp = await redisClient.get(`${OTP_SMS_PATTERN}${user._id}`)
     const isVerified = await redisClient.get(otp + user._id)
