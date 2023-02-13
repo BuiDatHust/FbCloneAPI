@@ -14,7 +14,7 @@ exports.create = async (req, res) => {
     const params = permitParameter(req.body, CREATEABLE_PARAMETER)
     params.userId = req.currentUser._id
     const comment = await CommentServices.create(params)
-    sendSuccess(res, { comment })
+    sendSuccess(res, { comment: { ...comment._doc, userId: req.currentUser } })
   } catch (error) {
     sendError(res, 500, error.message, error)
   }
@@ -22,31 +22,39 @@ exports.create = async (req, res) => {
 
 exports.show = async (req, res) => {
   try {
-    const {id,type} = req.params;
-    const {describe} = req.query;
+    const { id, type } = req.params
+    const { describe } = req.query
     const filter = {}
-    switch(type) {
+    switch (type) {
       case 'post':
-        filter.postId = id;
-        filter.type = POST_TYPE;
-        break;
+        filter.postId = id
+        filter.type = POST_TYPE
+        break
       case 'comment':
-        filter.commentId = id;
-        filter.type = COMMENT_TYPE;
-        break;
+        filter.commentId = id
+        filter.type = COMMENT_TYPE
+        break
       default:
-        return sendError(res, 404, NoData);
+        return sendError(res, 404, NoData)
     }
-    const perPage = req.query.perPage || settings.defaultPerPage;
-    const numberPage  = req.query.numberPage || 1;
-    const sortBy = req.query.sortBy || 'create_at';
-    const sortOrder = req.query.sortOrder || 'DESC';
+    const perPage = req.query.perPage || settings.defaultPerPage
+    const numberPage = req.query.numberPage || 1
+    const sortBy = req.query.sortBy || 'createdAt'
+    const sortOrder = req.query.sortOrder || 'DESC'
     const sortCondition = {}
     sortCondition[sortBy] = sortOrder
-    if(describe) filter.describe = { $regex: `.*${describe}.*`}
-    const posts = await CommentServices.findAllByPaginate(filter, perPage, numberPage, sortCondition)
+    if (describe) filter.describe = { $regex: `.*${describe}.*` }
+    const comments = await CommentServices.findAllByPaginate(
+      filter,
+      perPage,
+      numberPage,
+      sortCondition
+    )
     let countTotal = await CommentServices.countDocument(filter)
-    sendSuccess(res, {posts, pagination: {total: countTotal, page: numberPage, perPage}})
+    sendSuccess(res, {
+      comments,
+      pagination: { total: countTotal, page: numberPage, perPage },
+    })
   } catch (error) {
     sendError(res, 500, error.message, error)
   }
@@ -76,7 +84,7 @@ exports.delete = async (req, res) => {
       userId: req.currentUser._id,
     })
     if (!comment) return sendError(res, 404, NoData)
-    await CommentServices.delete({_id: commentId})
+    await CommentServices.delete({ _id: commentId })
     sendSuccess(res, {})
   } catch (error) {
     sendError(res, 500, error.message, error)

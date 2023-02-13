@@ -203,11 +203,11 @@ usersSchema.statics.deleteToken = async (deviceId, id) => {
     await redisClient.lPop(`${WHITELIST_ACCESS_TOKEN_PATTERN}${id}_${deviceId}`)
     totalToken -= 1
   }
-  await this.findByIdAndUpdate(id, {
-    $pullAll: {
-      device_ids: deviceId,
-    },
-  })
+  // await this.findByIdAndUpdate(id, {
+  //   $pullAll: {
+  //     device_ids: deviceId,
+  //   },
+  // })
 }
 
 usersSchema.statics.deleteAllToken = async (id) => {
@@ -222,11 +222,11 @@ usersSchema.statics.deleteAllToken = async (id) => {
       totalToken -= 1
     }
   }
-  await this.findByIdAndUpdate(id, {
-    $pullAll: {
-      device_ids: [],
-    },
-  })
+  // await this.findByIdAndUpdate(id, {
+  //   $pullAll: {
+  //     device_ids: [],
+  //   },
+  // })
 }
 
 usersSchema.index(

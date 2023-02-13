@@ -3,7 +3,10 @@ const { sendError, sendSuccess } = require('../libs/response')
 const { NoData } = require('../libs/errors')
 const FriendServices = require('../services/FriendServices')
 const settings = require('../configs/settings')
-const { getSameFriend } = require('../decorators/FriendDecorators')
+const {
+  getSameFriend,
+  getFriendStatus,
+} = require('../decorators/FriendDecorators')
 
 exports.create = async (req, res) => {
   try {
@@ -13,7 +16,7 @@ exports.create = async (req, res) => {
       userId,
       requestedUserId,
       user: req.currentUser,
-      deviceId: req.deviceId
+      deviceId: req.deviceId,
     })
     if (!friend) return sendError(res, 404, NoData)
     sendSuccess(res, { friend })
@@ -22,19 +25,59 @@ exports.create = async (req, res) => {
   }
 }
 
+exports.indexCancelRequest = async (req, res) => {
+  try {
+    const { userId } = req.params
+    const requestedUserId = req.currentUser._id
+
+    await FriendServices.cancelFriendRequest({
+      userId,
+      requestedUserId,
+    })
+
+    sendSuccess(res, {})
+  } catch (error) {
+    sendError(res, 500, error.message, error)
+  }
+}
+
+exports.indexDeleteFriend = async (req, res) => {
+  try {
+    const { userId } = req.params
+    const requestedUserId = req.currentUser._id
+
+    console.log({ userId, requestedUserId })
+
+    await FriendServices.deleteFriendRelation({
+      userId,
+      requestedUserId,
+    })
+
+    sendSuccess(res, {})
+  } catch (error) {
+    sendError(res, 500, error.message, error)
+  }
+}
+
 exports.approved = async (req, res) => {
   try {
-    const { friendRequestId } = req.params
-    const userId = req.currentUser._id
+    const { userId } = req.params
+    const loggedInUserId = req.currentUser._id
+
     const friend = await FriendServices.findOneByFilter({
-      userId,
-      _id: friendRequestId,
+      userId: loggedInUserId,
+      requestedUserId: userId,
       status: PENDING,
     })
+
     if (!friend) return sendError(res, 404, NoData)
-    await FriendServices.updateFriendRequest(userId, friend.requestedUserId, {
+
+    await FriendServices.updateFriendRequest(loggedInUserId, userId, {
       status: APPROVED,
     })
+
+    await FriendServices.deleteMany({ userId, requestedUserId: loggedInUserId })
+
     sendSuccess(res, {})
   } catch (error) {
     sendError(res, 500, error.message, error)
@@ -43,17 +86,21 @@ exports.approved = async (req, res) => {
 
 exports.reject = async (req, res) => {
   try {
-    const { friendRequestId } = req.params
-    const userId = req.currentUser._id
+    const { userId } = req.params
+    const loggedInUserId = req.currentUser._id
+
     const friend = await FriendServices.findOneByFilter({
-      userId,
-      _id: friendRequestId,
+      userId: loggedInUserId,
+      requestedUserId: userId,
       status: PENDING,
     })
+
     if (!friend) return sendError(res, 404, NoData)
-    await FriendServices.updateFriendRequest(userId, friend.requestedUserId, {
+
+    await FriendServices.updateFriendRequest(loggedInUserId, userId, {
       status: REJECTED,
     })
+
     sendSuccess(res, {})
   } catch (error) {
     sendError(res, 500, error.message, error)
@@ -62,21 +109,23 @@ exports.reject = async (req, res) => {
 
 exports.index = async (req, res) => {
   try {
-    const user = req.currentUser
+    const { userId } = req.params
     const perPage = req.query.perPage || settings.defaultPerPage
     const numberPage = req.query.numberPage || 1
-    const sortBy = req.query.sortBy || 'create_at'
+    const sortBy = req.query.sortBy || 'createdAt'
     const sortOrder = req.query.sortOrder || 'DESC'
     const sortCondition = {}
     sortCondition[sortBy] = sortOrder
     const friends = await FriendServices.findListFriendByPaginate(
-      user._id,
+      userId,
       numberPage,
       perPage,
       sortCondition
     )
-    let countTotal = await FriendServices.countListFriend(user._id)
-    const result = await getSameFriend(user._id, friends)
+    let countTotal = await FriendServices.countListFriend(userId)
+    let result = await getSameFriend(userId, friends)
+    result = await getFriendStatus(req.currentUser._id, result)
+
     sendSuccess(res, {
       friends: result,
       pagination: { total: countTotal, page: numberPage, perPage },
@@ -143,12 +192,13 @@ exports.indexRequest = async (req, res) => {
         countTotal = await FriendServices.countListRequestedFriend(user._id)
         break
       case 'recieved':
-        friendRequesteds = await FriendServices.findFriendRequestRecievedByPaginate(
-          user._id,
-          numberPage,
-          perPage,
-          sortCondition
-        )
+        friendRequesteds =
+          await FriendServices.findFriendRequestRecievedByPaginate(
+            user._id,
+            numberPage,
+            perPage,
+            sortCondition
+          )
         countTotal = await FriendServices.countListRecievedFriend(user._id)
         break
       default:
@@ -156,9 +206,9 @@ exports.indexRequest = async (req, res) => {
     }
     const result = await getSameFriend(user._id, friendRequesteds)
     sendSuccess(res, {
-        friendRequesteds: result,
-        pagination: { total: countTotal, page: numberPage, perPage },
-      })
+      friendRequesteds: result,
+      pagination: { total: countTotal, page: numberPage, perPage },
+    })
   } catch (error) {
     sendError(res, 500, error.message, error)
   }

@@ -50,7 +50,12 @@ exports.show = async (req, res) => {
     const { postId } = req.params
     const post = await PostServices.findOne({ _id: postId })
     if (!post) return sendError(res, 404, NoData)
-    sendSuccess(res, { post })
+
+    const [result] = await PostServices.decoratePost(req.currentUser._id, [
+      post._doc,
+    ])
+
+    sendSuccess(res, { post: result })
   } catch (error) {
     sendError(res, 500, error.message, error)
   }

@@ -2,11 +2,17 @@ const { Router } = require('express')
 const router = Router()
 const FriendController = require('../../controllers/FriendControllers')
 
-router.get('/', FriendController.index)
+router.get('/list/:userId', FriendController.index)
 router.get('/requested/:type', FriendController.indexRequest)
 router.get('/:userId', FriendController.indexSameFriend)
 router.post('/:userId', FriendController.create)
-router.patch('/approve/:friendRequestId', FriendController.approved)
-router.patch('/reject/:friendRequestId', FriendController.reject)
+router.patch('/approve/:userId', FriendController.approved)
+router.patch('/reject/:userId', FriendController.reject)
+
+// remove friend when already friend
+router.delete('/destroy/:userId', FriendController.indexDeleteFriend)
+
+// cancel friend request
+router.delete('/:userId', FriendController.indexCancelRequest)
 
 module.exports = router

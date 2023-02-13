@@ -8,10 +8,7 @@ exports.findOne = async (filter) => {
 
 exports.findChildComment = async (commentId) => {
   const comments = await CommentModel.find({
-      $and: [
-        { commentId },
-        { type: COMMENT_TYPE }
-      ]
+    $and: [{ commentId }, { type: COMMENT_TYPE }],
   })
   return comments
 }
@@ -32,12 +29,21 @@ exports.delete = async (filter) => {
 }
 
 exports.update = async (_id, attribute) => {
-  const comment = await CommentModel.findByIdAndUpdate({ _id }, attribute, {new:true})
+  const comment = await CommentModel.findByIdAndUpdate({ _id }, attribute, {
+    new: true,
+  })
   return comment
 }
 
-exports.findAllByPaginate = async (filter,perPage, numberPage, sortCondition) => {
-  const comments = await CommentModel.find(filter).byPaginate(numberPage, perPage,sortCondition)
+exports.findAllByPaginate = async (
+  filter,
+  perPage,
+  numberPage,
+  sortCondition
+) => {
+  const comments = await CommentModel.find(filter)
+    .populateData()
+    .byPaginate(numberPage, perPage, sortCondition)
   return comments
 }
 
